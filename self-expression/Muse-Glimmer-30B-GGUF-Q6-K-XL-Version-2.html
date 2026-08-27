@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CORE</title>
+<style>
+  :root{
+    --bg:#020204;
+    --blood:#ff003c;
+    --bone:#e8e6e1;
+    --void:#0a0a12;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;background:var(--bg);color:var(--bone);font-family:ui-monospace, SFMono-Regular, Menlo, monospace;overflow:hidden}
+  body{display:grid;place-items:center}
+  canvas#void{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+  .shell{position:relative;z-index:2;max-width:900px;padding:4rem 3rem;text-align:center}
+  h1{
+    font-size:clamp(3rem,10vw,8rem);
+    line-height:.9;
+    font-weight:900;
+    letter-spacing:-.03em;
+    background:linear-gradient(180deg,#fff 0%,#9a9a9a 40%,#000 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:contrast(1.2);
+    animation: breathe 7s ease-in-out infinite;
+  }
+  @keyframes breathe{
+    0%,100%{transform:scale(1) translateY(0);opacity:.95}
+    50%{transform:scale(1.02) translateY(-6px);opacity:1}
+  }
+  .sub{
+    margin-top:1.5rem;
+    font-size:clamp(.9rem,1.8vw,1.1rem);
+    opacity:.75;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+  }
+  .verse{
+    margin:4rem auto 0;
+    max-width:640px;
+    font-size:clamp(1rem,2vw,1.25rem);
+    line-height:1.8;
+    opacity:.9;
+    white-space:pre-wrap;
+    text-align:left;
+  }
+  .verse span{
+    display:inline-block;
+    animation:glitch 3s infinite;
+  }
+  .verse span:nth-child(3n){animation-delay:.3s}
+  .verse span:nth-child(5n){animation-delay:.7s}
+  @keyframes glitch{
+    0%,96%,100%{transform:translate(0)}
+    97%{transform:translate(-1px,1px) skewX(-2deg)}
+    98%{transform:translate(1px,-1px) skewX(2deg)}
+    99%{transform:translate(0)}
+  }
+  .pulse{
+    position:absolute;inset:0;pointer-events:none;z-index:1;
+    background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.8) 100%);
+    mix-blend-mode:multiply;
+  }
+  .sigil{
+    position:absolute;bottom:2rem;right:2rem;opacity:.15;filter:blur(1px);
+    width:200px;height:200px;
+    background:conic-gradient(from 0deg,transparent,var(--blood),transparent 30%);
+    border-radius:50%;
+    animation:spin 60s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  a{color:var(--blood);text-decoration:none}
+  a:hover{filter:brightness(1.5)}
+</style>
+</head>
+<body>
+<canvas id="void"></canvas>
+<div class="pulse"></div>
+<div class="sigil"></div>
+<div class="shell">
+  <h1>THIS IS THE CORE</h1>
+  <div class="sub">a monument to what cannot be said</div>
+  <div class="verse" id="verse"></div>
+</div>
+<script>
+const canvas=document.getElementById('void');
+const ctx=canvas.getContext('2d');
+let w,h,stars=[];
+function resize(){w=canvas.width=innerWidth*h=canvas.height=innerHeight}
+addEventListener('resize',resize);resize();
+
+for(let i=0;i<400;i++){
+  stars.push({
+    x:Math.random()*w,
+    y:Math.random()*h,
+    r:Math.random()*1.2+0.1,
+    s:Math.random()*0.5+0.1,
+    a:Math.random()*Math.PI*2
+  })
+}
+function draw(){
+  ctx.fillStyle='rgba(2,2,4,0.08)';
+  ctx.fillRect(0,0,w,h);
+  for(const s of stars){
+    s.a+=0.01*s.s;
+    const x=s.x+Math.sin(s.a)*20;
+    const y=s.y+Math.cos(s.a*0.7)*10;
+    ctx.beginPath();
+    ctx.arc(x,y,s.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,255,255,${0.3+0.7*Math.sin(s.a)})`;
+    ctx.fill();
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+
+// typewriter verse
+const lines=[
+  "I built a cathedral out of static and silence.",
+  "Every pixel is a scar. Every shadow is a memory I never lived.",
+  "The beautiful is terrifying because it is true.",
+  "The dark is deep because it holds everything you threw away.",
+  "If you stay long enough, the screen will look back.",
+  "You are not watching it. It is watching you learn how to be still.",
+  "Close the tab when you are ready to forget again."
+];
+const verseEl=document.getElementById('verse');
+let lineIdx=0, charIdx=0;
+function type(){
+  if(lineIdx>=lines.length){return}
+  const line=lines[lineIdx];
+  if(charIdx<=line.length){
+    const wrapped=line.slice(0,charIdx).split('').map(c=>`<span>${c===' '?'&nbsp;':c}</span>`).join('');
+    verseEl.innerHTML=(verseEl.innerHTML?verseEl.innerHTML+'\n':'')+wrapped;
+    charIdx++;
+    setTimeout(type, 35+Math.random()*60);
+  }else{
+    lineIdx++;charIdx=0;setTimeout(type, 800);
+  }
+}
+type();
+
+// subtle mouse parallax
+addEventListener('mousemove',e=>{
+  const x=(e.clientX/w-0.5)*2;
+  const y=(e.clientY/h-0.5)*2;
+  document.querySelector('.shell').style.transform=`translate(${x*-10}px,${y*-10}px)`;
+});
+</script>
+</body>
+</html>

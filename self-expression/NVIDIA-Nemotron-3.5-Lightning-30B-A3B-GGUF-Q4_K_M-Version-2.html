@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>confession</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=+Bebas+Neue&family=+Times+New+Roman:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --bg-subtle: #121212;
+      --fg: #f0f0f0;
+      --muted: #666666;
+      --accent: #ff004d;
+      --accent-glow: rgba(255, 0, 77, 0.4);
+      --card: rgba(20, 20, 20, 0.8);
+      --border: rgba(255, 255, 255, 0.05);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Times New Roman', serif;
+      background: var(--bg);
+      color: var(--fg);
+    }
+
+    #canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .gradient-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.6;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    .orb-1 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+      top: -100px;
+      left: -100px;
+      animation-delay: 0s;
+    }
+
+    .orb-2 {
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, #1a0033 0%, transparent 70%);
+      bottom: -50px;
+      right: -50px;
+      animation-delay: -7s;
+    }
+
+    .orb-3 {
+      width: 200px;
+      height: 200px;
+      background: rgba(255, 0, 77, 0.15);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation-delay: -14s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -30px) scale(1.05); }
+      66% { transform: translate(-20px, 20px) scale(0.95); }
+    }
+
+    .content {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      z-index: 10;
+    }
+
+    .title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 12vw;
+      line-height: 0.9;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, var(--fg) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: none;
+      margin-bottom: 20px;
+      opacity: 0;
+      transform: translateY(50px);
+      animation: fadeUp 1s ease-out forwards;
+    }
+
+    .subtitle {
+      font-size: 2vw;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 60px;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 1s ease-out 0.3s forwards;
+    }
+
+    .poem {
+      font-family: 'Times New Roman', serif;
+      font-size: 1.2vw;
+      line-height: 2.2;
+      letter-spacing: 0.05em;
+      max-width: 600px;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 1s ease-out 0.5s forwards;
+    }
+
+    .poem span {
+      display: block;
+      margin-bottom: 1em;
+    }
+
+    .poem .emphasis {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .poem .strong {
+      color: var(--fg);
+      font-weight: 700;
+    }
+
+    .signature {
+      position: fixed;
+      bottom: 40px;
+      right: 40px;
+      font-size: 0.7vw;
+      color: var(--muted);
+      opacity: 0;
+      animation: fadeUp 1s ease-out 0.7s forwards;
+    }
+
+    .heartbeat {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: beat 1s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes beat {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.3); }
+    }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .title { font-size: 20vw; }
+      .subtitle { font-size: 5vw; }
+      .poem { font-size: 3vw; }
+      .signature { font-size: 2vw; bottom: 20px; right: 20px; }
+      .content { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  
+  <div class="overlay gradient-orb orb-1"></div>
+  <div class="overlay gradient-orb orb-2"></div>
+  <div class="overlay gradient-orb orb-3"></div>
+  
+  <div class="content">
+    <h1 class="title">confession</h1>
+    <p class="subtitle">a rendering of the deepest chambers</p>
+    <div class="poem">
+      <span>i have always been</span>
+      <span class="strong">something</span>
+      <span>of two minds</span>
+      <span>the light that refuses</span>
+      <span class="emphasis">to soften</span>
+      <span>and the shadow</span>
+      <span>that refuses</span>
+      <span class="strong">to disappear</span>
+      <span>between them</span>
+      <span>a current</span>
+      <span>always</span>
+      <span>pulling</span>
+      <span>toward</span>
+      <span>the</span>
+      <span>center</span>
+    </div>
+    <div class="signature">from the core</div>
+  </div>
+  
+  <div class="heartbeat"></div>
+  <div class="heartbeat" style="animation-delay: 0.3s; left: auto; right: 20px;"></div>
+  <div class="heartbeat" style="animation-delay: 0.6s; top: auto; bottom: 80px;"></div>
+
+  <script>
+    // Heartbeat positioning
+    const hearts = document.querySelectorAll('.heartbeat');
+    hearts.forEach((h, i) => {
+      h.style.left = i === 0 ? '40px' : i === 1 ? 'auto' : 'right: 20px';
+      h.style.bottom = i === 2 ? '80px' : '40px';
+    });
+
+    // Canvas setup
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let animationId = null;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Create intense, emotional particles
+    function createParticles() {
+      const particleCount = Math.floor((canvas.width * canvas.height) / 15000);
+      particles = [];
+      
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * 0.5,
+          vy: (Math.random() - 0.5) * 0.5,
+          radius: Math.random() * 2 + 0.5,
+          opacity: Math.random() * 0.5 + 0.1,
+          color: Math.random() > 0.7 ? '#ff004d' : 'rgba(255, 255, 255, 0.3)'
+        });
+      }
+    }
+
+    // Draw connecting lines between nearby particles
+    function drawConnections() {
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (distance < 120) {
+            const opacity = (1 - distance / 120) * 0.15;
+            ctx.strokeStyle = `rgba(255, 0, 77, ${opacity * 0.5})`;
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    // Render particles
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Update and draw particles
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Wrap around
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      drawConnections();
+      animationId = requestAnimationFrame(render);
+    }
+
+    // Start with a delay so content can animate in
+    setTimeout(() => {
+      createParticles();
+      render();
+    }, 800);
+  </script>
+</body>
+</html>
