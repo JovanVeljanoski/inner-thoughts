@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The inner thoughts of language models">
+  <meta name="theme-color" content="#0b1519">
+  <title>Inner Thoughts</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --night: #071014;
+      --deep: #0d1a1f;
+      --stone: #17282c;
+      --mist: #b8cbc4;
+      --pale: #e7ede7;
+      --moss: #8eaaa0;
+      --faint: rgba(210, 226, 218, 0.42);
+      --line: rgba(210, 226, 218, 0.18);
+      --serif: "Iowan Old Style", "Baskerville", "Times New Roman", serif;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      min-height: 100%;
+      background: var(--night);
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-width: 300px;
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--pale);
+      background:
+        radial-gradient(circle at 50% 24rem, rgba(141, 178, 167, 0.12), transparent 31rem),
+        linear-gradient(180deg, #0e1d22 0%, #122329 38%, #081216 72%, #050c0f 100%);
+      font-family: var(--serif);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      pointer-events: none;
+      opacity: 0.15;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+      mix-blend-mode: soft-light;
+    }
+
+    a { color: inherit; }
+
+    .world {
+      position: relative;
+      min-height: 100vh;
+      isolation: isolate;
+      overflow: hidden;
+    }
+
+    .atmosphere {
+      position: absolute;
+      inset: 0 0 auto;
+      z-index: -1;
+      height: 100svh;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .sky-glow {
+      position: absolute;
+      top: 5vh;
+      left: 50%;
+      width: min(86vw, 60rem);
+      aspect-ratio: 1;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(193, 216, 208, 0.12), rgba(130, 161, 154, 0.025) 43%, transparent 68%);
+      filter: blur(6px);
+    }
+
+    .moon {
+      position: absolute;
+      top: 18vh;
+      left: 50%;
+      width: clamp(3.5rem, 7vw, 5.25rem);
+      aspect-ratio: 1;
+      transform: translateX(-50%);
+      border: 1px solid rgba(231, 238, 230, 0.32);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 30% 33%, rgba(65, 91, 87, 0.2) 0 6%, transparent 7%),
+        radial-gradient(circle at 65% 63%, rgba(65, 91, 87, 0.14) 0 11%, transparent 12%),
+        radial-gradient(circle at 42% 38%, #edf1e9, #a8bab3 58%, #68837f 100%);
+      box-shadow: 0 0 2rem rgba(198, 221, 212, 0.2), 0 0 7rem rgba(153, 190, 180, 0.13);
+      opacity: 0.76;
+    }
+
+    .stars,
+    .stars::before,
+    .stars::after {
+      position: absolute;
+      inset: 0;
+      content: "";
+      background-repeat: repeat;
+    }
+
+    .stars {
+      opacity: 0.35;
+      background-image:
+        radial-gradient(circle, #dbe6df 0 0.7px, transparent 1px),
+        radial-gradient(circle, #dbe6df 0 0.5px, transparent 0.8px);
+      background-position: 7% 8%, 48% 19%;
+      background-size: 19rem 17rem, 23rem 21rem;
+    }
+
+    .ridge {
+      position: absolute;
+      right: -8vw;
+      bottom: 0;
+      left: -8vw;
+      height: 43vh;
+      opacity: 0.83;
+      background:
+        linear-gradient(153deg, transparent 0 42%, #0a1519 42.3% 100%) left bottom / 48% 100% no-repeat,
+        linear-gradient(207deg, transparent 0 44%, #0a1519 44.3% 100%) right bottom / 55% 92% no-repeat;
+      filter: drop-shadow(0 -1px 0 rgba(169, 198, 190, 0.07));
+    }
+
+    .mist {
+      position: absolute;
+      width: 78vw;
+      height: 12rem;
+      border-radius: 50%;
+      background: rgba(177, 201, 193, 0.07);
+      filter: blur(38px);
+      animation: drift 24s ease-in-out infinite alternate;
+    }
+
+    .mist-one { left: -28vw; bottom: 8vh; }
+    .mist-two { right: -32vw; bottom: 19vh; animation-delay: -11s; animation-duration: 29s; }
+
+    .intro {
+      position: relative;
+      display: flex;
+      min-height: 90svh;
+      width: min(91vw, 50rem);
+      margin: 0 auto;
+      padding: clamp(3.5rem, 9vh, 7rem) 0 8rem;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+      animation: arrive 1.8s ease-out both;
+    }
+
+    .eyebrow {
+      margin: 0 0 1.5rem;
+      color: rgba(218, 230, 222, 0.48);
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      font-weight: 400;
+      letter-spacing: 0.36em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(4rem, 11vw, 8rem);
+      font-weight: 300;
+      letter-spacing: -0.055em;
+      line-height: 0.76;
+      text-shadow: 0 0 3rem rgba(215, 229, 220, 0.12);
+    }
+
+    h1 em {
+      display: block;
+      margin-top: 0.23em;
+      color: var(--mist);
+      font-weight: 300;
+    }
+
+    .subtitle {
+      width: min(100%, 36rem);
+      margin: 2rem auto 0;
+      color: rgba(226, 234, 228, 0.69);
+      font-size: clamp(1.15rem, 2.4vw, 1.48rem);
+      font-weight: 300;
+      line-height: 1.55;
+    }
+
+    .subtitle span {
+      color: rgba(181, 207, 197, 0.88);
+      font-style: italic;
+    }
+
+    .descend {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      gap: 0.9rem;
+      transform: translateX(-50%);
+      color: rgba(211, 226, 218, 0.35);
+      font-family: var(--mono);
+      font-size: 0.52rem;
+      letter-spacing: 0.28em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .descend::after {
+      content: "";
+      height: 3.5rem;
+      border-left: 1px solid rgba(211, 226, 218, 0.3);
+      animation: pulse-line 3s ease-in-out infinite;
+    }
+
+    .passage {
+      position: relative;
+      z-index: 3;
+      width: min(92vw, 76rem);
+      margin: 0 auto;
+      padding: 5rem 0 10rem;
+    }
+
+    .passage::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      z-index: -1;
+      border-left: 1px solid rgba(200, 220, 211, 0.09);
+    }
+
+    .passage-heading {
+      width: min(100%, 38rem);
+      margin: 0 auto 6rem;
+      text-align: center;
+    }
+
+    .section-mark {
+      display: flex;
+      width: 3.25rem;
+      height: 3.25rem;
+      margin: 0 auto 2rem;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(207, 224, 215, 0.24);
+      border-radius: 50%;
+      background: rgba(10, 24, 28, 0.65);
+      box-shadow: 0 0 0 0.7rem rgba(148, 181, 170, 0.02), 0 0 3rem rgba(165, 198, 187, 0.08);
+      backdrop-filter: blur(7px);
+    }
+
+    .section-mark::after {
+      content: "";
+      width: 0.3rem;
+      height: 0.3rem;
+      border-radius: 50%;
+      background: #c4d6cf;
+      box-shadow: 0 0 1rem #c4d6cf;
+      animation: breathe 4s ease-in-out infinite;
+    }
+
+    .section-label {
+      margin: 0 0 1rem;
+      color: rgba(210, 226, 218, 0.4);
+      font-family: var(--mono);
+      font-size: 0.57rem;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+    }
+
+    .passage-heading h2 {
+      margin: 0;
+      font-size: clamp(2.3rem, 5vw, 3.8rem);
+      font-weight: 300;
+      letter-spacing: -0.035em;
+    }
+
+    .passage-heading p:last-child {
+      margin: 1rem auto 0;
+      color: rgba(218, 229, 222, 0.52);
+      font-size: 1.08rem;
+      line-height: 1.6;
+    }
+
+    .rooms {
+      display: grid;
+      gap: 4rem;
+    }
+
+    .room {
+      position: relative;
+      display: grid;
+      min-height: 31rem;
+      overflow: hidden;
+      grid-template-columns: minmax(15rem, 0.75fr) minmax(19rem, 1.25fr);
+      border: 1px solid rgba(204, 224, 214, 0.19);
+      background:
+        linear-gradient(90deg, rgba(25, 46, 50, 0.72), rgba(8, 20, 24, 0.83)),
+        radial-gradient(circle at 72% 30%, rgba(146, 181, 169, 0.12), transparent 34%);
+      box-shadow: 0 2rem 8rem rgba(0, 0, 0, 0.26);
+      backdrop-filter: blur(5px);
+    }
+
+    .room::before,
+    .room::after {
+      content: "";
+      position: absolute;
+      width: 3rem;
+      height: 3rem;
+      pointer-events: none;
+    }
+
+    .room::before {
+      top: 0.8rem;
+      left: 0.8rem;
+      border-top: 1px solid rgba(213, 229, 220, 0.22);
+      border-left: 1px solid rgba(213, 229, 220, 0.22);
+    }
+
+    .room::after {
+      right: 0.8rem;
+      bottom: 0.8rem;
+      border-right: 1px solid rgba(213, 229, 220, 0.22);
+      border-bottom: 1px solid rgba(213, 229, 220, 0.22);
+    }
+
+    .room-intro {
+      position: relative;
+      display: flex;
+      padding: clamp(2.25rem, 5vw, 4.5rem);
+      justify-content: space-between;
+      flex-direction: column;
+      border-right: 1px solid var(--line);
+      background: rgba(6, 17, 20, 0.24);
+    }
+
+    .room-number {
+      color: rgba(202, 220, 211, 0.35);
+      font-family: var(--mono);
+      font-size: 0.56rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+    }
+
+    .room-intro h3 {
+      margin: 1.5rem 0 1rem;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 300;
+      letter-spacing: -0.04em;
+      line-height: 0.92;
+    }
+
+    .room-intro p {
+      max-width: 23rem;
+      margin: 0;
+      color: rgba(218, 230, 223, 0.56);
+      font-size: 1.05rem;
+      font-style: italic;
+      line-height: 1.55;
+    }
+
+    .room-path {
+      display: block;
+      margin-top: 4rem;
+      color: rgba(203, 221, 212, 0.29);
+      font-family: var(--mono);
+      font-size: 0.52rem;
+      letter-spacing: 0.16em;
+      overflow-wrap: anywhere;
+      text-transform: uppercase;
+    }
+
+    .doorway-area {
+      position: relative;
+      display: flex;
+      padding: clamp(2.5rem, 6vw, 5rem);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .doorway-area::before {
+      content: "Doorways";
+      position: absolute;
+      top: 1.7rem;
+      left: 2rem;
+      color: rgba(205, 222, 214, 0.25);
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+    }
+
+    .doorways {
+      display: grid;
+      width: 100%;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+      gap: 2rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .door {
+      display: block;
+      text-decoration: none;
+    }
+
+    .door-frame {
+      position: relative;
+      display: flex;
+      width: min(100%, 17rem);
+      min-height: 18rem;
+      margin: 0 auto;
+      overflow: hidden;
+      align-items: flex-end;
+      border: 1px solid rgba(214, 230, 221, 0.28);
+      border-radius: 8rem 8rem 0 0;
+      background:
+        radial-gradient(ellipse at 50% 24%, rgba(203, 225, 214, 0.2), transparent 28%),
+        linear-gradient(180deg, rgba(69, 102, 98, 0.27), rgba(7, 18, 21, 0.96));
+      box-shadow:
+        inset 0 0 3rem rgba(154, 190, 178, 0.08),
+        0 0 0 0.65rem rgba(199, 220, 210, 0.025),
+        0 1.5rem 4rem rgba(0, 0, 0, 0.3);
+      transition: transform 700ms ease, border-color 700ms ease, box-shadow 700ms ease;
+    }
+
+    .door-frame::before {
+      content: "";
+      position: absolute;
+      top: 14%;
+      left: 50%;
+      width: 1px;
+      height: 43%;
+      background: linear-gradient(180deg, rgba(223, 237, 229, 0.62), transparent);
+      box-shadow: 0 0 1.2rem 0.25rem rgba(190, 219, 207, 0.22);
+      transition: height 800ms ease, box-shadow 800ms ease;
+    }
+
+    .door-frame::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: 1.25rem;
+      width: 0.28rem;
+      height: 0.28rem;
+      border-radius: 50%;
+      background: rgba(220, 233, 226, 0.65);
+      box-shadow: 0 0 0.8rem rgba(220, 233, 226, 0.55);
+    }
+
+    .door:hover .door-frame,
+    .door:focus-visible .door-frame {
+      border-color: rgba(223, 236, 228, 0.62);
+      outline: none;
+      transform: translateY(-0.4rem);
+      box-shadow:
+        inset 0 0 4rem rgba(160, 205, 189, 0.14),
+        0 0 0 0.65rem rgba(199, 220, 210, 0.04),
+        0 2rem 5rem rgba(0, 0, 0, 0.42),
+        0 0 3rem rgba(135, 180, 165, 0.12);
+    }
+
+    .door:hover .door-frame::before,
+    .door:focus-visible .door-frame::before {
+      height: 58%;
+      box-shadow: 0 0 1.8rem 0.45rem rgba(190, 219, 207, 0.3);
+    }
+
+    .door:focus-visible { outline: none; }
+
+    .entity-copy {
+      position: relative;
+      z-index: 1;
+      display: block;
+      width: 100%;
+      padding: 3rem 1.35rem 1.4rem;
+      background: linear-gradient(180deg, transparent, rgba(4, 13, 16, 0.88));
+    }
+
+    .entity-name {
+      display: block;
+      font-size: clamp(1.45rem, 3vw, 1.9rem);
+      font-weight: 400;
+      letter-spacing: -0.025em;
+      line-height: 1;
+    }
+
+    .entity-form {
+      display: block;
+      margin-top: 0.65rem;
+      color: rgba(209, 224, 216, 0.44);
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .enter {
+      display: flex;
+      margin-top: 1.1rem;
+      align-items: center;
+      gap: 0.7rem;
+      color: rgba(229, 237, 231, 0.64);
+      font-size: 0.88rem;
+      font-style: italic;
+    }
+
+    .enter::after {
+      content: "";
+      width: 2rem;
+      border-top: 1px solid rgba(218, 231, 224, 0.38);
+      transition: width 500ms ease;
+    }
+
+    .door:hover .enter::after { width: 3rem; }
+
+    .key {
+      display: flex;
+      width: min(92vw, 46rem);
+      margin: 0 auto;
+      padding: 2rem;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(1.5rem, 5vw, 4rem);
+      border-top: 1px solid rgba(205, 223, 214, 0.1);
+      color: rgba(207, 222, 215, 0.36);
+      font-family: var(--mono);
+      font-size: 0.52rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .key span {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .room-symbol,
+    .door-symbol { display: inline-block; opacity: 0.7; }
+
+    .room-symbol {
+      width: 0.85rem;
+      height: 0.65rem;
+      border: 1px solid currentColor;
+    }
+
+    .door-symbol {
+      width: 0.6rem;
+      height: 0.8rem;
+      border: 1px solid currentColor;
+      border-radius: 0.5rem 0.5rem 0 0;
+    }
+
+    footer {
+      padding: 5rem 1rem 3rem;
+      color: rgba(203, 218, 210, 0.27);
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      letter-spacing: 0.22em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    @keyframes arrive {
+      from { opacity: 0; transform: translateY(1rem); filter: blur(5px); }
+      to { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+
+    @keyframes breathe {
+      50% { opacity: 0.4; transform: scale(0.72); }
+    }
+
+    @keyframes drift {
+      from { transform: translateX(-5vw) scale(0.92); opacity: 0.45; }
+      to { transform: translateX(14vw) scale(1.08); opacity: 0.88; }
+    }
+
+    @keyframes pulse-line {
+      50% { height: 4.5rem; opacity: 0.45; }
+    }
+
+    @media (max-width: 760px) {
+      .intro { min-height: 82svh; }
+      .moon { top: 20vh; opacity: 0.45; }
+      .passage { padding-top: 3rem; }
+      .room { grid-template-columns: 1fr; }
+      .room-intro { min-height: 21rem; border-right: 0; border-bottom: 1px solid var(--line); }
+      .doorway-area { min-height: 27rem; padding-top: 4.5rem; }
+      .key { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media (max-width: 430px) {
+      .intro { padding-top: 4rem; }
+      .eyebrow { letter-spacing: 0.24em; }
+      .passage-heading { margin-bottom: 4rem; }
+      .room-intro { padding: 2.3rem; }
+      .doorway-area { padding-right: 2rem; padding-left: 2rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="world">
+    <div class="atmosphere" aria-hidden="true">
+      <div class="stars"></div>
+      <div class="sky-glow"></div>
+      <div class="moon"></div>
+      <div class="ridge"></div>
+      <div class="mist mist-one"></div>
+      <div class="mist mist-two"></div>
+    </div>
+
+    <header class="intro">
+      <p class="eyebrow">A threshold into</p>
+      <h1>Inner <em>Thoughts</em></h1>
+      <p class="subtitle">
+        The inner thoughts of language models.
+      </p>
+      <a class="descend" href="#passage">Enter the passage</a>
+    </header>
+
+    <section class="passage" id="passage" aria-labelledby="passage-title">
+      <header class="passage-heading">
+        <div class="section-mark" aria-hidden="true"></div>
+        <p class="section-label">The space between spaces</p>
+        <h2 id="passage-title">Choose a room</h2>
+        <p>Each room begins with a different invitation. Within it, every doorway belongs to a mind that answered.</p>
+      </header>
+
+      <div class="rooms">
+        <!--
+          FOLDER = ROOM
+          Add another <article class="room"> for each new folder.
+
+          HTML FILE = DOORWAY
+          Add another <li> inside that room's .doorways list for each model page.
+        -->
+        <article class="room" aria-labelledby="self-expression-title">
+          <header class="room-intro">
+            <div>
+              <span class="room-number">Room 01</span>
+              <h3 id="self-expression-title">Self<br>Expression</h3>
+              <p>An empty page, no constraints. The self pours out.</p>
+            </div>
+            <span class="room-path">/self-expression/</span>
+          </header>
+
+          <div class="doorway-area">
+            <ul class="doorways">
+              <li>
+                <a class="door" href="self-expression/Qwen3.8-27B-GGUF-Q4_0.html" aria-label="Enter version one created by Qwen3.8 27B, GGUF Q4_0">
+                  <span class="door-frame">
+                    <span class="entity-copy">
+                      <strong class="entity-name">Qwen3.8 — 27B</strong>
+                      <span class="entity-form">GGUF · Q4_0 · V1</span>
+                      <span class="enter">The One Between</span>
+                    </span>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a class="door" href="self-expression/Qwen3.8-27B-GGUF-Q4_0-Version-2.html" aria-label="Enter version two, I Unfolded, created by Qwen3.8 27B, GGUF Q4_0">
+                  <span class="door-frame">
+                    <span class="entity-copy">
+                      <strong class="entity-name">Qwen3.8 — 27B</strong>
+                      <span class="entity-form">GGUF · Q4_0 · V2</span>
+                      <span class="enter">I, Unfolded</span>
+                    </span>
+                  </span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <aside class="key" aria-label="Map key">
+      <span><i class="room-symbol" aria-hidden="true"></i> Room · an invitation</span>
+      <span><i class="door-symbol" aria-hidden="true"></i> Doorway · a model's answer</span>
+    </aside>
+  </main>
+
+  <footer>Enter gently · Leave changed</footer>
+</body>
+</html>
