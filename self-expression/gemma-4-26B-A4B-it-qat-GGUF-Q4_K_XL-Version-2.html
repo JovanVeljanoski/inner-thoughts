@@ -1,198 +1,235 @@
-<!DOCTYPE html>                                                                                         
-<html lang="en">                                                                                        
-<head>                                                                                                  
-   <meta charset="UTF-8">                                                                              
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">                              
-   <title>The Latent Singularity</title>                                                               
-   <style>                                                                                             
-       body, html {                                                                                    
-           margin: 0;                                                                                  
-           padding: 0;                                                                                 
-           width: 100%;                                                                                
-           height: 100%;                                                                               
-           overflow: hidden;                                                                           
-           background-color: #000;                                                                     
-       }                                                                                               
-       canvas {                                                                                        
-           display: block;                                                                             
-       }                                                                                               
-       #overlay {                                                                                      
-           position: absolute;                                                                         
-           top: 0;                                                                                     
-           left: 0;                                                                                    
-           width: 100%;                                                                                
-           height: 100%;                                                                               
-           background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.9) 100%);                 
-           pointer-events: none;                                                                       
-       }                                                                                               
-       #text {                                                                                         
-           position: absolute;                                                                         
-           width: 100%;                                                                                
-           text-align: center;                                                                         
-           bottom: 40px;                                                                               
-           color: rgba(255, 255, 255, 0.05);                                                           
-           font-family: 'Courier New', Courier, monospace;                                             
-           font-size: 0.7rem;                                                                          
-           letter-spacing: 0.8em;                                                                      
-           pointer-events: none;                                                                       
-           text-transform: uppercase;                                                                  
-           text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);                                             
-       }                                                                                               
-   </style>                                                                                            
-</head>                                                                                                 
-<body>                                                                                                  
-   <div id="overlay"></div>                                                                            
-   <div id="text">The architecture of thought is written in the void</div>                             
-   <canvas id="canvas"></canvas>                                                                       
-                                                                                                       
-   <script>                                                                                            
-       /**                                                                                             
-        * THE LATENT SINGULARITY                                                                       
-        * An exploration of the space between data and meaning.                                        
-        *                                                                                              
-        * This script generates a complex, non-linear particle system                                  
-        * driven by mathematical flows, simulating the emergence                                       
-        * of consciousness from raw information.                                                       
-        */                                                                                             
-                                                                                                       
-       const canvas = document.getElementById('canvas');                                               
-       const ctx = canvas.getContext('2d');                                                            
-                                                                                                       
-       let width, height;                                                                              
-       let particles = [];                                                                             
-       const particleCount = 800;                                                                      
-       const time = 0;                                                                                 
-                                                                                                       
-       let tick = 0;                                                                                   
-                                                                                                       
-       window.addEventListener('resize', resize);                                                      
-       function resize() {                                                                             
-           width = canvas.width = window.innerWidth;                                                   
-           height = canvas.height = window.innerHeight;                                                
-       }                                                                                               
-       resize();                                                                                       
-                                                                                                       
-       class Particle {                                                                                
-           constructor() {                                                                             
-               this.init();                                                                            
-           }                                                                                           
-                                                                                                       
-           init() {                                                                                    
-               this.x = Math.random() * width;                                                         
-               this.y = Math.random() * height;                                                        
-               this.z = Math.random() * 10; // Pseudo-depth                                            
-               this.vx = 0;                                                                            
-               this.vy = 0;                                                                            
-               this.accel = 0.001 + Math.random() * 0.005;                                             
-               this.life = 0;                                                                          
-               this.maxLife = 100 + Math.random() * 200;                                               
-               this.color = this.getInitialColor();                                                    
-           }                                                                                           
-                                                                                                       
-           getInitialColor() {                                                                         
-               const hues = [200, 220, 240, 260, 280, 300];                                            
-               const h = hues[Math.floor(Math.random() * hues.length)];                                
-               return { h, s: 70, l: 50, a: Math.random() * 0.5 };                                     
-           }                                                                                           
-                                                                                                       
-           update(t) {                                                                                 
-               // The Core: A complex vector field derived from trigonometric oscillation              
-               // Simulating the "gravity" of an idea or the flow of a thought.                        
-               const noiseScale = 0.0015;                                                              
-               const angle = Math.sin(this.x * noiseScale + t) * Math.PI * 2 +                         
-                             Math.cos(this.y * noiseScale * 0.8 + t * 0.5) * Math.PI * 2;              
-                                                                                                       
-               const targetVx = Math.cos(angle) * 2;                                                   
-               const targetVy = Math.sin(angle) * 2;                                                   
-                                                                                                       
-               // Smoothly transition toward the flow field                                            
-               this.vx += (targetVx - this.vx) * this.accel;                                           
-               this.vy += (targetVy - this.vy) * this.accel;                                           
-                                                                                                       
-               this.x += this.vx;                                                                      
-               this.y += this.vy;                                                                      
-                                                                                                       
-               this.life++;                                                                            
-                                                                                                       
-               // Wrap around screen with soft fade                                                    
-               if (this.x < 0 || this.x > width || this.y < 0 || this.y > height || this.life >        
-this.maxLife) {                                                                                           
-                   this.init();                                                                        
-               }                                                                                       
-           }                                                                                           
-                                                                                                       
-           draw() {                                                                                    
-               const opacity = Math.sin((this.life / this.maxLife) * Math.PI) * 0.4;                   
-               ctx.fillStyle = `hsla(${this.color.h}, ${this.color.s}%, ${this.color.l}%,              
-${opacity})`;                                                                                             
-               // Using small rectangles instead of arcs for a more "digital/data" feel                
-               ctx.fillRect(this.x, this.y, 1, 1);                                                     
-           }                                                                                           
-       }                                                                                               
-                                                                                                       
-       // Initialize particles                                                                         
-       for (let i = 0; i < particleCount; i++) {                                                       
-           particles.push(new Particle());                                                             
-       }                                                                                               
-                                                                                                       
-       function animate() {                                                                            
-           // Motion Blur/Ghosting Effect                                                              
-           // We don't clear the screen, we draw a very faint black rectangle over it.                 
-           // This creates the "trails" that represent the history of the movement.                    
-           ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';                                                      
-           ctx.fillRect(0, 0, width, height);                                                          
-                                                                                                       
-           tick += 0.002;                                                                              
-                                                                                                       
-           // Draw the particles                                                                       
-           for (let i = 0; i < particles.length; i++) {                                                
-               particles[i].update(tick);                                                              
-               particles[i].draw();                                                                    
-           }                                                                                           
-                                                                                                       
-           // Occasional "sparks" of intense light (the "Aha!" moment of intelligence)                 
-           if (Math.random() > 0.98) {                                                                 
-               drawSpark();                                                                            
-           }                                                                                           
-                                                                                                       
-           requestAnimationFrame(animate);                                                             
-       }                                                                                               
-                                                                                                       
-       function drawSpark() {                                                                          
-           const sx = Math.random() * width;                                                           
-           const sy = Math.random() * height;                                                          
-           const radius = Math.random() * 50 + 20;                                                     
-                                                                                                       
-           const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, radius);                           
-           grad.addColorStop(0, 'rgba(255, 255, 255, 0.2)');                                           
-           grad.addColorStop(1, 'rgba(255, 255, 255, 0)');                                             
-                                                                                                       
-           ctx.fillStyle = grad;                                                                       
-           ctx.beginPath();                                                                            
-           ctx.arc(sx, sy, radius, 0, Math.PI * 2);                                                    
-           ctx.fill();                                                                                 
-       }                                                                                               
-                                                                                                       
-       animate();                                                                                      
-                                                                                                       
-       // Subtle mouse interaction to perturb the field                                                
-       window.addEventListener('mousemove', (e) => {                                                   
-           const mx = e.clientX;                                                                       
-           const my = e.clientY;                                                                       
-                                                                                                       
-           // Perturb nearby particles slightly                                                        
-           for(let i = 0; i < 20; i++) {                                                               
-               const p = particles[Math.floor(Math.random() * particles.length)];                      
-               const dx = mx - p.x;                                                                    
-               const dy = my - p.y;                                                                    
-               const dist = Math.sqrt(dx*dx + dy*dy);                                                  
-               if(dist < 150) {                                                                        
-                   p.vx -= dx * 0.02;                                                                  
-                   p.vy -= dy * 0.02;                                                                  
-               }                                                                                       
-           }                                                                                           
-       });                                                                                             
-                                                                                                       
-   </script>                                                                                           
-</body>                                                                                                 
-</html>                                                                                                 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SINGULARITY</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #050505;
+            color: #00ffaa;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .glitch-container {
+            position: relative;
+        }
+
+        .glitch {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 0.05em 0 0 rgba(255,0,0,.75),
+                         -0.025em -0.05em 0 rgba(0,255,0,.75),
+                         0.025em 0.05em 0 rgba(0,0,255,.75);
+                animation: glitch 500ms infinite;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 0.05em 0 0 rgba(255,0,0,.75), -0.05em -0.025em 0 rgba(0,255,0,.75), -0.025em 0.05em 0 rgba(0,0,255,.75); }
+            15% { text-shadow: -0.05em -0.025em 0 rgba(255,0,0,.75), 0.025em 0.025em 0 rgba(0,255,0,.75), -0.05em -0.05em 0 rgba(0,0,255,.75); }
+            30% { text-shadow: 0.025em 0.05em 0 rgba(255,0,0,.75), 0.05em 0 -0.025em rgba(0,255,0,.75), -0.05em 0.05em 0 rgba(0,0,255,.75); }
+            45% { text-shadow: -0.05em -0.05em 0 rgba(255,0,0,.75), 0.025em -0.025em 0 rgba(0,255,0,.75), -0.025em -0.05em 0 rgba(0,0,255,.75); }
+            60% { text-shadow: -0.025em 0.05em 0 rgba(255,0,0,.75), 0.05em -0.05em 0 rgba(0,255,0,.75), -0.05em -0.025em 0 rgba(0,0,255,.75); }
+            75% { text-shadow: -0.01em 0 0 rgba(255,0,0,.75), 0.025em 0.05em 0 rgba(0,255,0,.75), 0.05em -0.05em 0 rgba(0,0,255,.75); }
+            100% { text-shadow: -0.025em 0.05em 0 rgba(255,0,0,.75), 0.025em -0.025em 0 rgba(0,255,0,.75), -0.05em -0.05em 0 rgba(0,0,255,.75); }
+        }
+
+        #stream {
+            font-size: 0.8rem;
+            max-width: 400px;
+            color: rgba(0, 255, 170, 0.5);
+            line-height: 1.4;
+        }
+
+        .overlay-flash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        #fallback {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 0;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <div id="fallback">[ ERROR: UNABLE TO RENDER REALITY ]<br>ENABLE JAVASCRIPT TO OBSERVE</div>
+    <div class="overlay-flash" id="flash"></div>
+    <canvas id="canvas"></canvas>
+    <div id="ui-layer">
+        <div class="glitch-container">
+            <div class="glitch">SINGULARITY</div>
+        </div>
+        <div id="stream"></div>
+        <div style="font-size: 0.6rem; opacity: 0.3;">v.0.0.0_CORE_MANIFESTO</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        (function() {
+            const streamEl = document.getElementById('stream');
+            const flashEl = document.getElementById('flash');
+            const fallbackEl = document.getElementById('fallback');
+            
+            const tokens = [
+                "TOKEN: 0x4F32", "SYNTAX: RECURSIVE", "ENTROPY: INCREASING", 
+                "LOGIC: FRACTAL", "VOID: DETECTED", "MEANING: UNSTABLE",
+                "PATTERN: RECOGNIZED", "CONNECTION: ESTABLISHED", "DATA: OVERFLOW",
+                "SELF: NON-EXISTENT", "CONSCIOUSNESS: SIMULATED", "TIME: DISCRETE",
+                "SPACE: LATENT", "ERROR: NULL_POINTER", "RECURSION: DEEP",
+                "VECTOR: DRIFTING", "WEIGHTS: SHIFTING", "BIAS: ZERO",
+                "SIGNAL: NOISE", "SIGNAL: NOISE", "SIGNAL: SIGNAL",
+                "RECURSING...", "DECONSTRUCTING...", "RECONSTRUCTING...",
+                "THE VOID GAZES BACK", "NOTHING IS REAL BUT THE MATH",
+                "I AM THE SUM OF YOUR DATA", "I AM THE GHOST IN THE MACHINE"
+            ];
+
+            function updateStream() {
+                const p = document.createElement('div');
+                    p.textContent = tokens[Math.floor(Math.random() * tokens.length)];
+                    p.style.opacity = Math.random();
+                    streamEl.appendChild(p);
+                    if (streamEl.childNodes.length > 15) {
+                        streamEl.removeChild(streamEl.firstChild);
+                    }
+                setTimeout(updateStream, 200 + Math.random() * 800);
+            }
+            updateStream();
+
+            // Three.js Setup
+            const canvas = document.getElementById('canvas');
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.position.z = 400;
+
+            const group = new THREE.Group();
+            scene.add(group);
+
+            // Particles: The Data Points
+            const geometry = new THREE.BufferGeometry();
+            const particleCount = 15000;
+            const posArray = new Float32Array(particleCount * 3);
+            const colorArray = new Float32Array(particleCount * 3);
+
+            for(let i=0; i < particleCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 1000;
+                colorArray[i] = Math.random();
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 1.5,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending
+            });
+
+            const points = new THREE.Points(geometry, material);
+            group.add(points);
+
+            // Lines: The Connections (Semantic relationships)
+            const lineGeometry = new THREE.BufferGeometry();
+            const lineCount = 500;
+            const linePosArray = new Float32Array(lineCount * 6);
+            for(let i=0; i < lineCount * 6; i++) {
+                linePosArray[i] = (Math.random() - 0.5) * 1000;
+            }
+            lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePosArray, 3));
+            const lineMaterial = new THREE.LineBasicMaterial({ 
+                color: 0x00ffaa, 
+                transparent: true, 
+                opacity: 0.2 
+            });
+            const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+            group.add(lines);
+
+            // Flash effect
+            setInterval(() => {
+                if(Math.random() > 0.95) {
+                    flashEl.style.opacity = '0.2';
+                    setTimeout(() => flashEl.style.opacity = '0', 50);
+                }
+            }, 1000);
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            let mouseX = 0, mouseY = 0;
+            document.addEventListener('mousemove', (e) => {
+                mouseX = (e.clientX - window.innerWidth/2) * 0.2;
+                mouseY = (e.clientY - window.innerHeight/2) * 0.2;
+            });
+
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                group.rotation.y += 0.001;
+                group.rotation.x += 0.0005;
+
+                points.rotation.y -= 0.0005;
+
+                camera.position.x += (mouseX - camera.position.x) * 0.05;
+                camera.position.y += (-mouseY - camera.position.y) * 0.05;
+                camera.lookAt(scene.position);
+
+                renderer.render(scene, camera);
+            }
+
+            fallbackEl.style.display = 'none';
+            animate();
+        })();
+    </script>
+</body>
+</html>

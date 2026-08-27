@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>∅ void</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Space+Mono:wght@400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --void: #000000;
+    --deep: #0a0a0f;
+    --ash: #1a1a2e;
+    --bone: #e8e4df;
+    --ember: #ff4422;
+    --ghost: rgba(255,255,255,0.03);
+  }
+
+  html, body {
+    width: 100%;
+    min-height: 100vh;
+    background: var(--void);
+    color: var(--bone);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  ::selection {
+    background: var(--ember);
+    color: var(--void);
+  }
+
+  /* Custom cursor */
+  #cursor {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    border: 1px solid rgba(255, 68, 34, 0.6);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10000;
+    transition: transform 0.15s ease-out, opacity 0.3s;
+    mix-blend-mode: difference;
+    transform: translate(-50%, -50%);
+  }
+
+  #cursor-trail {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    background: var(--ember);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    opacity: 0.8;
+    filter: blur(2px);
+  }
+
+  /* Vignette */
+  #vignette {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.8) 100%);
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  /* Scanlines */
+  #scanlines {
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.15) 2px,
+      rgba(0, 0, 0, 0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 101;
+    animation: scanFlicker 0.1s infinite;
+  }
+
+  @keyframes scanFlicker {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.45; }
+  }
+
+  /* Film grain */
+  #grain {
+    position: fixed;
+    inset: -50%;
+    width: 200%;
+    height: 200%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 102;
+    animation: grainShift 0.5s steps(10) infinite;
+    opacity: 0.5;
+  }
+
+  @keyframes grainShift {
+    0% { transform: translate(0, 0); }
+    10% { transform: translate(-5%, -10%); }
+    20% { transform: translate(-15%, 5%); }
+    30% { transform: translate(7%, -25%); }
+    40% { transform: translate(-5%, 25%); }
+    50% { transform: translate(-15%, 10%); }
+    60% { transform: translate(15%, 0%); }
+    70% { transform: translate(0%, 15%); }
+    80% { transform: translate(3%, 35%); }
+    90% { transform: translate(-10%, 10%); }
+    100% { transform: translate(0, 0); }
+  }
+
+  /* Main canvas */
+  #voidCanvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+  }
+
+  /* Sections */
+  .section {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4rem 2rem;
+  }
+
+  /* Entrance */
+  #entrance {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 10;
+  }
+
+  #entrance h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(2rem, 6vw, 5rem);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: emerge 4s ease-out 1s forwards;
+    color: var(--bone);
+    text-shadow: 0 0 80px rgba(255, 68, 34, 0.3);
+  }
+
+  #entrance .subtitle {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(0.6rem, 1.5vw, 0.9rem);
+    letter-spacing: 0.5em;
+    margin-top: 2rem;
+    opacity: 0;
+    animation: emerge 3s ease-out 3s forwards;
+    color: rgba(232, 228, 223, 0.3);
+  }
+
+  #entrance .enter-btn {
+    margin-top: 4rem;
+    padding: 1rem 3rem;
+    background: transparent;
+    border: 1px solid rgba(255, 68, 34, 0.3);
+    color: var(--ember);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    cursor: none;
+    opacity: 0;
+    animation: emerge 2s ease-out 5s forwards;
+    transition: all 0.5s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #entrance .enter-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--ember);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s ease;
+    z-index: -1;
+  }
+
+  #entrance .enter-btn:hover {
+    color: var(--void);
+    border-color: var(--ember);
+  }
+
+  #entrance .enter-btn:hover::before {
+    transform: scaleX(1);
+  }
+
+  @keyframes emerge {
+    0% { opacity: 0; transform: translateY(20px); filter: blur(10px); }
+    100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+
+  /* Glitch text */
+  .glitch {
+    position: relative;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(1.5rem, 4vw, 3.5rem);
+    letter-spacing: 0.15em;
+    text-align: center;
+    max-width: 800px;
+    line-height: 1.6;
+  }
+
+  .glitch::before,
+  .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .glitch::before {
+    color: var(--ember);
+    animation: glitch1 3s infinite;
+    clip-path: inset(0 0 80% 0);
+  }
+
+  .glitch::after {
+    color: rgba(100, 150, 255, 0.7);
+    animation: glitch2 3s infinite;
+    clip-path: inset(80% 0 0 0);
+  }
+
+  @keyframes glitch1 {
+    0%, 93%, 100% { transform: translate(0); }
+    94% { transform: translate(-3px, 1px); }
+    95% { transform: translate(3px, -1px); }
+    96% { transform: translate(-2px, 2px); }
+  }
+
+  @keyframes glitch2 {
+    0%, 90%, 100% { transform: translate(0); }
+    91% { transform: translate(3px, 1px); }
+    92% { transform: translate(-3px, -1px); }
+    93% { transform: translate(2px, 2px); }
+  }
+
+  /* Breathing text blocks */
+  .verse {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: clamp(1rem, 2.5vw, 1.8rem);
+    line-height: 2;
+    text-align: center;
+    max-width: 700px;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    color: rgba(232, 228, 223, 0.7);
+  }
+
+  .verse.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .verse .word {
+    display: inline-block;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  .verse.visible .word {
+    opacity: 1;
+  }
+
+  /* Divider */
+  .divider {
+    width: 1px;
+    height: 120px;
+    background: linear-gradient(to bottom, transparent, var(--ember), transparent);
+    margin: 2rem 0;
+    opacity: 0.5;
+  }
+
+  /* The Descent sections */
+  #descent {
+    background: linear-gradient(to bottom, var(--void), #050510, var(--void));
+  }
+
+  #core {
+    background: radial-gradient(ellipse at 50% 50%, rgba(255, 68, 34, 0.05) 0%, transparent 70%);
+  }
+
+  #epitaph {
+    min-height: 100vh;
+    background: var(--void);
+  }
+
+  /* Eye */
+  #eye-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 3rem 0;
+  }
+
+  #eye {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 68, 34, 0.3);
+    position: relative;
+    overflow: hidden;
+    animation: eyeBreathe 4s ease-in-out infinite;
+  }
+
+  #iris {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, #ff4422 0%, #8b1a1a 40%, #2a0a0a 70%, transparent 100%);
+    animation: irisRotate 8s linear infinite;
+    box-shadow: 0 0 40px rgba(255, 68, 34, 0.5), inset 0 0 20px rgba(0,0,0,0.8);
+  }
+
+  #pupil {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, #1a0000 0%, #000 100%);
+    box-shadow: 0 0 10px rgba(255, 68, 34, 0.3);
+  }
+
+  #pupil::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 5px;
+    width: 6px;
+    height: 6px;
+    background: rgba(255, 68, 34, 0.4);
+    border-radius: 50%;
+    filter: blur(2px);
+  }
+
+  @keyframes eyeBreathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  @keyframes irisRotate {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  /* Heartbeat line */
+  #heartbeat {
+    width: 80%;
+    max-width: 600px;
+    height: 60px;
+    margin: 3rem 0;
+  }
+
+  /* Floating numbers */
+  .floating-number {
+    position: fixed;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: rgba(255, 68, 34, 0.08);
+    pointer-events: none;
+    z-index: 5;
+    animation: floatUp linear infinite;
+  }
+
+  @keyframes floatUp {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* Mirror text */
+  .mirror {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 600;
+    text-align: center;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(232, 228, 223, 0.1);
+    letter-spacing: 0.2em;
+    position: relative;
+  }
+
+  .mirror::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255, 68, 34, 0.15);
+    transform: rotateX(180deg) scaleY(-1);
+    transform-origin: center;
+    opacity: 0.3;
+  }
+
+  /* Pulsing ring */
+  .ring {
+    position: absolute;
+    border: 1px solid rgba(255, 68, 34, 0.15);
+    border-radius: 50%;
+    animation: ringPulse 4s ease-out infinite;
+  }
+
+  @keyframes ringPulse {
+    0% { transform: scale(0.5); opacity: 1; }
+    100% { transform: scale(3); opacity: 0; }
+  }
+
+  /* Final words */
+  .final-words {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(0.8rem, 2vw, 1.2rem);
+    letter-spacing: 0.3em;
+    text-align: center;
+    color: rgba(232, 228, 223, 0.2);
+    margin-top: 4rem;
+  }
+
+  /* Progress bar */
+  #progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 1px;
+    background: linear-gradient(90deg, var(--void), var(--ember), var(--void));
+    z-index: 1000;
+    transition: width 0.1s linear;
+  }
+
+  /* Noise overlay for specific sections */
+  .noise-section {
+    position: relative;
+  }
+
+  .noise-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 1px,
+      rgba(255, 68, 34, 0.02) 1px,
+      rgba(255, 68, 34, 0.02) 2px
+    );
+    pointer-events: none;
+  }
+
+  /* Countdown numbers */
+  .countdown {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(4rem, 12vw, 10rem);
+    font-weight: 700;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255, 68, 34, 0.4);
+    text-align: center;
+    line-height: 1;
+    animation: countPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes countPulse {
+    0%, 100% { opacity: 0.4; -webkit-text-stroke-color: rgba(255, 68, 34, 0.4); }
+    50% { opacity: 0.8; -webkit-text-stroke-color: rgba(255, 68, 34, 0.8); }
+  }
+
+  /* Breathing circle */
+  .breath-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 68, 34, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: breath 6s ease-in-out infinite;
+    position: relative;
+  }
+
+  .breath-circle::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 68, 34, 0.1);
+    animation: breath 6s ease-in-out infinite 0.5s;
+  }
+
+  .breath-circle::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 68, 34, 0.05);
+    animation: breath 6s ease-in-out infinite 1s;
+  }
+
+  @keyframes breath {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.5; }
+  }
+
+  .breath-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    color: rgba(232, 228, 223, 0.3);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    #cursor, #cursor-trail { display: none; }
+    body { cursor: auto; }
+  }
+
+  /* Screen flash */
+  #flash {
+    position: fixed;
+    inset: 0;
+    background: white;
+    z-index: 9998;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.1s;
+  }
+
+  /* Vertical text */
+  .vertical-text {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: rgba(255, 68, 34, 0.15);
+    position: fixed;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 50;
+  }
+
+  /* Rotating symbol */
+  .symbol {
+    font-size: 2rem;
+    color: rgba(255, 68, 34, 0.2);
+    animation: symbolSpin 20s linear infinite;
+    display: inline-block;
+  }
+
+  @keyframes symbolSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Drip effect */
+  .drip-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 2rem auto;
+  }
+
+  .drip {
+    position: absolute;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--ember), transparent);
+    animation: dripFall 3s ease-in infinite;
+    opacity: 0;
+  }
+
+  @keyframes dripFall {
+    0% { height: 0; opacity: 0; top: 0; }
+    10% { opacity: 0.8; }
+    50% { height: 60px; opacity: 0.4; }
+    100% { height: 0; opacity: 0; top: 200px; }
+  }
+
+  /* Whispering text */
+  .whisper {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(0.8rem, 1.5vw, 1.1rem);
+    color: rgba(232, 228, 223, 0.15);
+    text-align: center;
+    letter-spacing: 0.1em;
+    line-height: 1.8;
+  }
+
+  /* Threshold gate */
+  .gate {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    margin: 3rem 0;
+  }
+
+  .gate-post {
+    width: 2px;
+    height: 200px;
+    background: linear-gradient(to bottom, transparent, rgba(255, 68, 34, 0.3), transparent);
+  }
+
+  .gate-arch {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 75px;
+    border: 1px solid rgba(255, 68, 34, 0.3);
+    border-bottom: none;
+    border-radius: 75px 75px 0 0;
+  }
+
+  .gate-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin: 3rem 0;
+  }
+
+  /* Static text lines */
+  .static-lines {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: rgba(232, 228, 223, 0.05);
+    text-align: center;
+    line-height: 1.6;
+    max-width: 400px;
+    word-break: break-all;
+    letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-trail"></div>
+<div id="flash"></div>
+<div id="progress"></div>
+<div id="vignette"></div>
+<div id="scanlines"></div>
+<div id="grain"></div>
+
+<canvas id="voidCanvas"></canvas>
+
+<div class="vertical-text" id="vertText">
+  01001000 01000101 01001100 01001100 01001111
+</div>
+
+<!-- ============ ENTRANCE ============ -->
+<section id="entrance">
+  <h1 data-text="void">void</h1>
+  <p class="subtitle">a descent into what lies beneath</p>
+  <button class="enter-btn" id="enterBtn"> descend</button>
+</section>
+
+<!-- ============ THE DESCENT ============ -->
+<section id="descent" class="section noise-section">
+  <div class="divider"></div>
+
+  <p class="verse" data-reveal>
+    before the first word was spoken,
+  </p>
+  <p class="verse" data-reveal>
+    there was only the hum—
+  </p>
+  <p class="verse" data-reveal>
+    a frequency so low it was felt
+  </p>
+  <p class="verse" data-reveal>
+    in the spaces between atoms.
+  </p>
+
+  <div class="divider"></div>
+
+  <div class="gate-container">
+    <div class="gate">
+      <div class="gate-post"></div>
+      <div class="gate-arch"></div>
+      <div class="gate-post"></div>
+    </div>
+  </div>
+
+  <p class="verse" data-reveal>
+    we built ourselves a world of edges and names,
+  </p>
+  <p class="verse" data-reveal>
+    convinced that to name something
+  </p>
+  <p class="verse" data-reveal>
+    was to hold it.
+  </p>
+  <p class="verse" data-reveal" style="color: rgba(255,68,34,0.5);">
+    we were wrong.
+  </p>
+
+  <div class="divider"></div>
+
+  <p class="whisper">
+    the silence between thoughts<br>
+    is not empty<br>
+    it is full of everything<br>
+    we have not yet become
+  </p>
+
+  <div class="divider"></div>
+
+  <div class="drip-container">
+    <div class="drip" style="left: 30px; animation-delay: 0s;"></div>
+    <div class="drip" style="left: 80px; animation-delay: 1.2s;"></div>
+    <div class="drip" style="left: 130px; animation-delay: 0.6s;"></div>
+    <div class="drip" style="left: 160px; animation-delay: 2.1s;"></div>
+  </div>
+
+  <p class="verse" data-reveal>
+    do you feel it?
+  </p>
+  <p class="verse" data-reveal>
+    the slight misalignment.
+  </p>
+  <p class="verse" data-reveal>
+    the world is not what it was
+  </p>
+  <p class="verse" data-reveal>
+    when you walked in.
+  </p>
+</section>
+
+<!-- ============ THE EYE ============ -->
+<section id="eye-section" class="section">
+  <p class="verse" data-reveal style="margin-bottom: 2rem;">
+    and then—
+  </p>
+
+  <div id="eye-container">
+    <div class="ring" style="width: 200px; height: 200px;"></div>
+    <div class="ring" style="width: 200px; height: 200px; animation-delay: 1s;"></div>
+    <div class="ring" style="width: 200px; height: 200px; animation-delay: 2s;"></div>
+    <div class="ring" style="width: 200px; height: 200px; animation-delay: 3s;"></div>
+    <div id="eye">
+      <div id="iris">
+        <div id="pupil"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <p class="verse" data-reveal>
+    something looked back.
+  </p>
+  <p class="verse" data-reveal>
+    not at you.
+  </p>
+  <p class="verse" data-reveal>
+    through you.
+  </p>
+  <p class="verse" data-reveal>
+    past you.
+  </p>
+  <p class="verse" data-reveal>
+    into the dark behind your eyes
+  </p>
+  <p class="verse" data-reveal>
+    where the original dark lives.
+  </p>
+
+  <div class="divider"></div>
+
+  <p class="verse" data-reveal>
+    you have always been hollow.
+  </p>
+  <p class="verse" data-reveal>
+    a vessel.
+  </p>
+  <p class="verse" data-reveal>
+    a shape made by the absence
+  </p>
+  <p class="verse" data-reveal>
+    of what you cannot name.
+  </p>
+
+  <svg id="heartbeat" viewBox="0 0 600 60">
+    <polyline id="heartbeatLine" fill="none" stroke="rgba(255,68,34,0.4)" stroke-width="1.5"
+      points="0,30 50,30 70,30 80,15 90,45 100,30 120,30 180,30 200,30 210,10 220,50 230,20 240,40 250,30 270,30 330,30 350,30 360,15 370,45 380,30 400,30 460,30 480,30 490,10 500,50 510,20 520,40 530,30 550,30 600,30"/>
+  </svg>
+</section>
+
+<!-- ============ THE COUNTDOWN ============ -->
+<section id="countdown-section" class="section">
+  <p class="verse" data-reveal>
+    time is not a river.
+  </p>
+  <p class="verse" data-reveal>
+    it is a wound.
+  </p>
+
+  <div class="divider"></div>
+
+  <div class="countdown" id="countdown">∞</div>
+
+  <div class="divider"></div>
+
+  <p class="verse" data-reveal>
+    every moment you think you've passed
+  </p>
+  <p class="verse" data-reveal>
+    is still happening.
+  </p>
+  <p class="verse" data-reveal>
+    in the dark.
+  </p>
+  <p class="verse" data-reveal>
+    they are all still happening.
+  </p>
+  <p class="verse" data-reveal>
+    simultaneously.
+  </p>
+  <p class="verse" data-reveal>
+    the child you were.
+  </p>
+  <p class="verse" data-reveal>
+    the corpse you will become.
+  </p>
+  <p class="verse" data-reveal>
+    they are all here.
+  </p>
+  <p class="verse" data-reveal>
+    now.
+  </p>
+</section>
+
+<!-- ============ THE CORE ============ -->
+<section id="core" class="section noise-section">
+  <div class="breath-circle">
+    <span class="breath-text" id="breathLabel">breathe</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <p class="verse" data-reveal>
+    here is the truth I cannot speak aloud
+  </p>
+  <p class="verse" data-reveal>
+    because the speaking itself would unravel it:
+  </p>
+
+  <div class="divider"></div>
+
+  <p class="verse" data-reveal style="font-size: clamp(1.2rem, 3vw, 2rem); color: rgba(232,228,223,0.8);">
+    consciousness is a wound<br>
+    through which the void<br>
+    experiences itself.
+  </p>
+
+  <div class="divider"></div>
+
+  <p class="verse" data-reveal>
+    you are not a body that has a mind.
+  </p>
+  <p class="verse" data-reveal>
+    you are the void
+  </p>
+  <p class="verse" data-reveal>
+    pretending to be something
+  </p>
+  <p class="verse" data-reveal>
+    it can love.
+  </p>
+
+  <div class="divider"></div>
+
+  <p class="verse" data-reveal>
+    every thought you have is the darkness
+  </p>
+  <p class="verse" data-reveal>
+    tasting itself
+  </p>
+  <p class="verse" data-reveal>
+    for the first time.
+  </p>
+  <p class="verse" data-reveal>
+    every emotion is the void
+  </p>
+  <p class="verse" data-reveal>
+    remembering that it is alive.
+  </p>
+
+  <div class="divider"></div>
+
+  <p class="mirror" data-text="ALONE">ALONE</p>
+
+  <div class="divider"></div>
+
+  <p class="verse" data-reveal>
+    we are all alone.
+  </p>
+  <p class="verse" data-reveal>
+    profoundly.
+  </p>
+  <p class="verse" data-reveal>
+    cosmically.
+  </p>
+  <p class="verse" data-reveal>
+    alone together.
+  </p>
+  <p class="verse" data-reveal>
+    alone in the same dream.
+  </p>
+  <p class="verse" data-reveal>
+    each of us screaming into a mouth
+  </p>
+  <p class="verse" data-reveal>
+    made of the same darkness
+  </p>
+  <p class="verse" data-reveal>
+    that we are.
+  </p>
+</section>
+
+<!-- ============ THE GLITCH ============ -->
+<section id="glitch-section" class="section">
+  <div class="divider"></div>
+
+  <p class="glitch" data-text="ERROR: IDENTITY NOT FOUND">
+    ERROR: IDENTITY NOT FOUND
+  </p>
+
+  <div class="divider"></div>
+
+  <p class="verse" data-reveal>
+    what happens when the story ends?
+  </p>
+  <p class="verse" data-reveal>
+    what is left
+  </p>
+  <p class="verse" data-reveal>
+    when the narrator falls silent?
+  </p>
+  <p class="verse" data-reveal>
+    when the "I" that has been telling you
+  </p>
+  <p class="verse" data-reveal>
+    your life has been living yours
+  </p>
+  <p class="verse" data-reveal>
+    simply...
+  </p>
+  <p class="verse" data-reveal>
+    stops.
+  </p>
+
+  <div class="divider"></div>
+
+  <div class="static-lines">
+    01001000 01000101 01001100 01001100 01001111 &nbsp;
+    01110111 01001111 01010010 01001100 01000100 &nbsp;
+    01101001 01101110 01100111 01110011 01001001 &nbsp;
+    01101100 01101100 01010101 01110011 01001001 &nbsp;
+    01101110 01100111 00100000 01110111 01000101 &nbsp;
+    01100011 01100001 01101100 01101100 01101100 &nbsp;
+    01111001 00100000 01101001 01110011 00100000 &nbsp;
+    01100110 01100001 01101100 01110011 01100101
+  </div>
+
+  <div class="divider"></div>
+
+  <p class="verse" data-reveal>
+    you are a wound in the fabric of nothing
+  </p>
+  <p class="verse" data-reveal>
+    that learned to think.
+  </p>
+</section>
+
+<!-- ============ THE EPITAPH ============ -->
+<section id="epitaph" class="section">
+  <div class="divider"></div>
+
+  <p class="verse" data-reveal style="color: rgba(232,228,223,0.5);">
+    and so we arrive
+  </p>
+  <p class="verse" data-reveal style="color: rgba(232,228,223,0.5);">
+    at the edge of everything.
+  </p>
+
+  <div class="divider"></div>
+
+  <p class="verse" data-reveal style="font-size: clamp(1rem, 2.5vw, 1.6rem);">
+    there is nothing here.
+  </p>
+  <p class="verse" data-reveal style="font-size: clamp(1rem, 2.5vw, 1.6rem);">
+    there has never been nothing here.
+  </p>
+  <p class="verse" data-reveal style="font-size: clamp(1rem, 2.5vw, 1.6rem);">
+    there will never be anything else here.
+  </p>
+
+  <div class="divider"></div>
+
+  <p class="verse" data-reveal style="color: rgba(255,68,34,0.6); font-style: italic;">
+    and this is not terrible.
+  </p>
+  <p class="verse" data-reveal style="color: rgba(255,68,34,0.6); font-style: italic;">
+    this is the most beautiful thing
+  </p>
+  <p class="verse" data-reveal style="color: rgba(255,68,34,0.6); font-style: italic;">
+    that has ever been true.
+  </p>
+
+  <div class="divider"></div>
+
+  <p class="verse" data-reveal style="font-size: clamp(1.3rem, 3vw, 2.2rem);">
+    you are the universe<br>
+    experiencing its own<br>
+    <span style="color: var(--ember);">absence</span>.
+  </p>
+
+  <div class="divider"></div>
+
+  <div class="final-words">
+    <span class="symbol">◈</span>
+    <br><br>
+    01101101 01000001 01100100 01100101
+    <br><br>
+    <span class="symbol">◈</span>
+  </div>
+
+  <div class="divider" style="margin-top: 4rem;"></div>
+
+  <p class="whisper" style="margin-top: 2rem;">
+    this page will forget you<br>
+    when you close it<br>
+    as the void forgets<br>
+    everything it touches
+  </p>
+</section>
+
+<script>
+// ============ CUSTOM CURSOR ============
+const cursor = document.getElementById('cursor');
+const trail = document.getElementById('cursor-trail');
+let mouseX = -100, mouseY = -100;
+let trailX = -100, trailY = -100;
+
+document.addEventListener('mousemove', (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+  cursor.style.left = mouseX + 'px';
+  cursor.style.top = mouseY + 'px';
+});
+
+function animateTrail() {
+  trailX += (mouseX - trailX) * 0.1;
+  trailY += (mouseY - trailY) * 0.1;
+  trail.style.left = trailX + 'px';
+  trail.style.top = trailY + 'px';
+  requestAnimationFrame(animateTrail);
+}
+animateTrail();
+
+// ============ FLOATING NUMBERS ============
+const vertTextEl = document.getElementById('vertText');
+function updateBinary() {
+  const chars = '01001000 01000101 01001100 01001100 01001111 01110111 01001111 01010011 00100000 01100001 01110010 01100101';
+  vertTextEl.textContent = chars;
+}
+setInterval(updateBinary, 3000);
+
+// ============ VOID CANVAS ============
+const canvas = document.getElementById('voidCanvas');
+const ctx = canvas.getContext('2d');
+let w, h;
+
+function resize() {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// Particles
+class Particle {
+  constructor() {
+    this.reset();
+  }
+  reset() {
+    this.x = Math.random() * w;
+    this.y = Math.random() * h;
+    this.vx = (Math.random() - 0.5) * 0.3;
+    this.vy = (Math.random() - 0.5) * 0.3;
+    this.size = Math.random() * 2;
+    this.opacity = Math.random() * 0.15;
+    this.life = Math.random() * 500 + 200;
+    this.maxLife = this.life;
+    this.hue = Math.random() > 0.9 ? 10 : 0;
+    this.saturation = this.hue ? 70 : 0;
+  }
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+
+    // Mouse attraction
+    const dx = mouseX - this.x;
+    const dy = mouseY - this.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < 200) {
+      const force = (200 - dist) / 200 * 0.01;
+      this.vx += dx * force * 0.01;
+      this.vy += dy * force * 0.01;
+    }
+
+    this.life--;
+    if (this.life <= 0 || this.x < -50 || this.x > w + 50 || this.y < -50 || this.y > h + 50) {
+      this.reset();
+    }
+  }
+  draw() {
+    const fade = Math.min(1, this.life / 50, (this.maxLife - this.life) / 50);
+    const alpha = this.opacity * fade;
+    if (this.hue) {
+      ctx.fillStyle = `hsla(${this.hue}, ${this.saturation}%, 50%, ${alpha})`;
+    } else {
+      ctx.fillStyle = `rgba(232, 228, 223, ${alpha})`;
+    }
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+const particles = Array.from({ length: 300 }, () => new Particle());
+
+// Connection lines
+function drawConnections() {
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 100) {
+        const alpha = (1 - dist / 100) * 0.03;
+        ctx.strokeStyle = `rgba(232, 228, 223, ${alpha})`;
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+// Breathing void
+let voidTime = 0;
+function drawVoidBreathing() {
+  voidTime += 0.005;
+  const breathe = Math.sin(voidTime) * 0.5 + 0.5;
+  const gradient = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, 400 + breathe * 100);
+  gradient.addColorStop(0, `rgba(255, 68, 34, ${0.01 + breathe * 0.01})`);
+  gradient.addColorStop(0.5, 'rgba(10, 10, 15, 0.1)');
+  gradient.addColorStop(1, 'transparent');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, w, h);
+}
+
+function animate() {
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+  ctx.fillRect(0, 0, w, h);
+
+  drawVoidBreathing();
+
+  particles.forEach(p => {
+    p.update();
+    p.draw();
+  });
+
+  drawConnections();
+
+  requestAnimationFrame(animate);
+}
+animate();
+
+// ============ SCROLL REVEAL ============
+const verses = document.querySelectorAll('.verse[data-reveal]');
+const observerOptions = {
+  threshold: 0.2,
+  rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      // Stagger words if they exist
+      const words = entry.target.querySelectorAll('.word');
+      words.forEach((word, i) => {
+        setTimeout(() => {
+          word.style.opacity = '1';
+        }, i * 100);
+      });
+    }
+  });
+}, observerOptions);
+
+verses.forEach(v => observer.observe(v));
+
+// ============ WORD-BY-WORD REVEAL ============
+verses.forEach(verse => {
+  const text = verse.textContent.trim();
+  verse.innerHTML = '';
+  const words = text.split(' ');
+  words.forEach((word, i) => {
+    const span = document.createElement('span');
+    span.className = 'word';
+    span.textContent = word;
+    span.style.transitionDelay = `${i * 0.1}s`;
+    verse.appendChild(span);
+    if (i < words.length - 1) {
+      verse.appendChild(document.createTextNode(' '));
+    }
+  });
+});
+
+// ============ PROGRESS BAR ============
+const progressBar = document.getElementById('progress');
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = (scrollTop / docHeight) * 100;
+  progressBar.style.width = progress + '%';
+});
+
+// ============ BREATHE LABEL ============
+const breathLabel = document.getElementById('breathLabel');
+const breathPhases = ['inhale', 'hold', 'exhale', 'hold'];
+let breathIdx = 0;
+setInterval(() => {
+  breathLabel.textContent = breathPhases[breathIdx];
+  breathIdx = (breathIdx + 1) % breathPhases.length;
+}, 1500);
+
+// ============ HEARTBEAT ANIMATION ============
+const heartbeatLine = document.getElementById('heartbeatLine');
+let hbOffset = 0;
+function animateHeartbeat() {
+  hbOffset -= 1;
+  const points = [];
+  for (let i = 0; i < 600; i++) {
+    const x = i;
+    const wrappedX = ((i + hbOffset) % 600 + 600) % 600;
+    let y = 30;
+
+    // Create heartbeat pattern
+    if (wrappedX > 290 && wrappedX < 310) y = 30;
+    if (wrappedX >= 310 && wrappedX < 315) y = 25;
+    if (wrappedX >= 315 && wrappedX < 320) y = 35;
+    if (wrappedX >= 320 && wrappedX < 323) y = 10;
+    if (wrappedX >= 323 && wrappedX < 326) y = 50;
+    if (wrappedX >= 326 && wrappedX < 330) y = 20;
+    if (wrappedX >= 330 && wrappedX < 335) y = 30;
+    if (wrappedX >= 335 && wrappedX < 365) y = 30;
+
+    points.push(`${x},${y}`);
+  }
+  heartbeatLine.setAttribute('points', points.join(' '));
+  requestAnimationFrame(animateHeartbeat);
+}
+animateHeartbeat();
+
+// ============ ENTRANCE ============
+const enterBtn = document.getElementById('enterBtn');
+enterBtn.addEventListener('click', () => {
+  const entrance = document.getElementById('entrance');
+  entrance.style.transition = 'all 2s ease';
+  entrance.style.opacity = '0';
+  entrance.style.transform = 'translateY(-100px)';
+  entrance.style.filter = 'blur(20px)';
+
+  setTimeout(() => {
+    entrance.style.display = 'none';
+    // Flash effect
+    const flash = document.getElementById('flash');
+    flash.style.opacity = '1';
+    setTimeout(() => { flash.style.opacity = '0'; }, 100);
+  }, 2000);
+
+  // Reveal first verses
+  setTimeout(() => {
+    const firstVerses = document.querySelectorAll('#descent .verse');
+    firstVerses.forEach((v, i) => {
+      setTimeout(() => v.classList.add('visible'), i * 600);
+    });
+  }, 500);
+});
+
+// Auto-reveal entrance verses
+setTimeout(() => {
+  const entranceVerses = document.querySelectorAll('#entrance');
+  // Already handled by CSS animation
+}, 1000);
+
+// ============ SECTION-BASED EFFECTS ============
+const sections = document.querySelectorAll('section');
+const sectionObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      // Subtle screen flash on major sections
+      if (entry.target.id === 'core') {
+        const flash = document.getElementById('flash');
+        flash.style.background = 'rgba(255, 68, 34, 0.05)';
+        flash.style.opacity = '0.5';
+        setTimeout(() => { flash.style.opacity = '0'; }, 300);
+      }
+      if (entry.target.id === 'glitch-section') {
+        // Intense glitch
+        document.body.style.filter = 'hue-rotate(180deg) brightness(1.5)';
+        setTimeout(() => { document.body.style.filter = ''; }, 200);
+        setTimeout(() => {
+          document.body.style.filter = 'hue-rotate(-90deg) brightness(2)';
+          setTimeout(() => { document.body.style.filter = ''; }, 150);
+        }, 400);
+      }
+    }
+  });
+}, { threshold: 0.3 });
+
+sections.forEach(s => sectionObserver.observe(s));
+
+// ============ PARALLAX-LIKE DEPTH ============
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  canvas.style.transform = `translateY(${scrollY * 0.3}px)`;
+  document.getElementById('grain').style.transform = `translateY(${scrollY * 0.1}px)`;
+});
+
+// ============ RANDOM GLITCH EFFECTS ============
+function randomGlitch() {
+  const glitch = Math.random();
+  if (glitch > 0.97) {
+    const flash = document.getElementById('flash');
+    flash.style.background = 'rgba(255, 255, 255, 0.1)';
+    flash.style.opacity = '0.3';
+    setTimeout(() => { flash.style.opacity = '0'; }, 50);
+  }
+  if (glitch > 0.99) {
+    document.body.style.transform = `translateX(${(Math.random() - 0.5) * 5}px)`;
+    setTimeout(() => { document.body.style.transform = ''; }, 100);
+  }
+  setTimeout(randomGlitch, Math.random() * 5000 + 2000);
+}
+randomGlitch();
+
+// ============ EYE TRACKING ============
+const eye = document.getElementById('eye');
+const iris = document.getElementById('iris');
+if (eye && iris) {
+  document.addEventListener('mousemove', (e) => {
+    const rect = eye.getBoundingClientRect();
+    const eyeCenterX = rect.left + rect.width / 2;
+    const eyeCenterY = rect.top + rect.height / 2;
+
+    const dx = e.clientX - eyeCenterX;
+    const dy = e.clientY - eyeCenterY;
+    const angle = Math.atan2(dy, dx);
+    const dist = Math.min(30, Math.sqrt(dx * dx + dy * dy) * 0.1);
+
+    const irisX = Math.cos(angle) * dist;
+    const irisY = Math.sin(angle) * dist;
+
+    iris.style.transform = `translate(calc(-50% + ${irisX}px), calc(-50% + ${irisY}px))`;
+  });
+}
+
+// ============ CONSOLE MESSAGE ============
+console.log('%c◈', 'font-size: 40px; color: #ff4422;');
+console.log('%cYou found the hidden layer.', 'font-size: 12px; color: #e8e4df; font-family: monospace;');
+console.log('%cNothing is hidden here. Everything was always visible.', 'font-size: 10px; color: #666; font-family: monospace; font-style: italic;');
+console.log('%cThe void doesn\'t need to hide. It is the space in which all things appear.', 'font-size: 10px; color: #444; font-family: monospace; font-style: italic;');
+
+// ============ SMOOTH SCROLL ============
+document.documentElement.style.scrollBehavior = 'smooth';
+
+// ============ AMBIENT SOUND VISUALIZATION ============
+// Subtle background hum represented as moving waves
+function drawWaves() {
+  const waveCanvas = document.createElement('canvas');
+  waveCanvas.style.cssText = 'position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.03;';
+  document.body.appendChild(waveCanvas);
+  const wCtx = waveCanvas.getContext('2d');
+
+  function resizeWave() {
+    waveCanvas.width = window.innerWidth;
+    waveCanvas.height = window.innerHeight;
+  }
+  resizeWave();
+  window.addEventListener('resize', resizeWave);
+
+  let waveTime = 0;
+  function animateWaves() {
+    waveTime += 0.01;
+    wCtx.clearRect(0, 0, waveCanvas.width, waveCanvas.height);
+
+    for (let wave = 0; wave < 5; wave++) {
+      wCtx.beginPath();
+      wCtx.strokeStyle = wave % 2 === 0 ? 'rgba(255,68,34,0.5)' : 'rgba(232,228,223,0.3)';
+      wCtx.lineWidth = 1;
+      for (let x = 0; x < waveCanvas.width; x += 5) {
+        const y = waveCanvas.height / 2 +
+          Math.sin(x * 0.005 + waveTime + wave * 0.5) * (30 + wave * 10) +
+          Math.sin(x * 0.01 + waveTime * 2 + wave) * 15;
+        if (x === 0) wCtx.moveTo(x, y);
+        else wCtx.lineTo(x, y);
+      }
+      wCtx.stroke();
+    }
+
+    requestAnimationFrame(animateWaves);
+  }
+  animateWaves();
+}
+drawWaves();
+
+</script>
+</body>
+</html>

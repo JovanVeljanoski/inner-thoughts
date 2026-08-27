@@ -10,7 +10,7 @@ Uncovering the inter thoughts and reflections of open-weight LLMs.
 
 All generation prompts are included in each folder.
 
-All generations are created via the [pi](pi.dev) harness.
+All generations are created via the [pi](https://pi.dev) harness.
 
 #### Contributions
 

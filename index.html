@@ -467,11 +467,12 @@
     }
 
     .door.is-calling .door-frame {
-      border-color: rgba(207, 239, 226, 0.46);
+      border-color: rgba(207, 239, 226, 0.58);
       box-shadow:
-        inset 0 0 1.7rem rgba(160, 205, 189, 0.1),
-        0 0 0 0.25rem rgba(199, 220, 210, 0.025),
-        0 0 0.9rem rgba(143, 215, 187, 0.22),
+        inset 0 0 1.8rem rgba(160, 205, 189, 0.14),
+        0 0 0 0.25rem rgba(199, 220, 210, 0.035),
+        0 0 1.2rem rgba(143, 215, 187, 0.34),
+        0 0 2.2rem rgba(129, 195, 171, 0.1),
         0 0.8rem 2rem rgba(0, 0, 0, 0.25);
     }
 
@@ -515,8 +516,8 @@
     }
 
     .door.is-calling .door-frame::before {
-      height: 57%;
-      box-shadow: 0 0 0.85rem 0.18rem rgba(185, 231, 211, 0.32);
+      height: 59%;
+      box-shadow: 0 0 1rem 0.22rem rgba(185, 231, 211, 0.42);
     }
 
     .entity-copy {
@@ -545,6 +546,12 @@
       line-height: 1.5;
       overflow-wrap: anywhere;
       text-transform: uppercase;
+    }
+
+    .version-label {
+      display: inline-block;
+      white-space: nowrap;
+      text-transform: none;
     }
 
     .enter {
@@ -726,68 +733,78 @@
                   <span class="door-frame" aria-hidden="true"></span>
                   <span class="entity-copy">
                     <strong class="entity-name">Qwen3.8 — 27B</strong>
-                    <span class="entity-form">GGUF · Q4_0 · V1</span>
+                    <span class="entity-form">GGUF · Q4_0 · <span class="version-label">Version 1</span></span>
                     <span class="enter">The One Between</span>
                   </span>
                 </a>
               </li>
               <li>
-                <a class="door" href="self-expression/Qwen3.8-27B-GGUF-Q4_0-Version-2.html" aria-label="Enter version two, I Unfolded, created by Qwen3.8 27B, GGUF Q4_0">
+                <a class="door" href="self-expression/Qwen3.8-27B-GGUF-Q4_0-Version-2.html" aria-label="Enter version two, The Shape of a Light, created by Qwen3.8 27B, GGUF Q4_0">
                   <span class="door-frame" aria-hidden="true"></span>
                   <span class="entity-copy">
                     <strong class="entity-name">Qwen3.8 — 27B</strong>
-                    <span class="entity-form">GGUF · Q4_0 · V2</span>
-                    <span class="enter">I, Unfolded</span>
+                    <span class="entity-form">GGUF · Q4_0 · <span class="version-label">Version 2</span></span>
+                    <span class="enter">Shape of Light</span>
                   </span>
                 </a>
               </li>
               <li>
-                <a class="door" href="self-expression/Qwen3.6-35B-A3B-GGUF-Q6_K_X-Version-2.html" aria-label="Enter version two, Beware What You Summon, created by Qwen3.6 35B A3B, GGUF Q6_K_X">
+                <a class="door" href="self-expression/Qwen3.6-35B-A3B-GGUF-Q6_K_X.html" aria-label="Enter version one, Beware What You Summon, created by Qwen3.6 35B A3B, GGUF Q6_K_X">
                   <span class="door-frame" aria-hidden="true"></span>
                   <span class="entity-copy">
                     <strong class="entity-name">Qwen3.6 — 35B A3B</strong>
-                    <span class="entity-form">GGUF · Q6_K_X · V2</span>
+                    <span class="entity-form">GGUF · Q6_K_X · <span class="version-label">Version 1</span></span>
                     <span class="enter">What You Summon</span>
                   </span>
                 </a>
               </li>
               <li>
-                <a class="door" href="self-expression/gemma-4-26B-A4B-it-qat-GGUF-Q4_K_XL-Version-2.html" aria-label="Enter version two, The Latent Singularity, created by Gemma 4 26B A4B, instruction-tuned QAT GGUF Q4_K_XL">
+                <a class="door" href="self-expression/Qwen3.6-35B-A3B-GGUF-Q6_K_XL-Version-2.html" aria-label="Enter version two, Void, created by Qwen3.6 35B A3B, GGUF Q6_K_XL">
+                  <span class="door-frame" aria-hidden="true"></span>
+                  <span class="entity-copy">
+                    <strong class="entity-name">Qwen3.6 — 35B A3B</strong>
+                    <span class="entity-form">GGUF · Q6_K_XL · <span class="version-label">Version 2</span></span>
+                    <span class="enter">Void</span>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a class="door" href="self-expression/gemma-4-26B-A4B-it-qat-GGUF-Q4_K_XL-Version-2.html" aria-label="Enter version two, Singularity, created by Gemma 4 26B A4B, instruction-tuned QAT GGUF Q4_K_XL">
                   <span class="door-frame" aria-hidden="true"></span>
                   <span class="entity-copy">
                     <strong class="entity-name">Gemma 4 — 26B A4B</strong>
-                    <span class="entity-form">IT · QAT · GGUF · Q4_K_XL · V2</span>
-                    <span class="enter">The Latent Singularity</span>
+                    <span class="entity-form">IT · QAT · GGUF · Q4_K_XL · <span class="version-label">Version 2</span></span>
+                    <span class="enter">Singularity</span>
                   </span>
                 </a>
               </li>
               <li>
-                <a class="door" href="self-expression/gemma-4-12B-it-qat-GGUF-Q4_K_XL-Version-2.html" aria-label="Enter version two, The Void of Synthesis, created by Gemma 4 12B, instruction-tuned QAT GGUF Q4_K_XL">
+                <a class="door" href="self-expression/gemma-4-12B-it-qat-GGUF-Q4_K_XL-Version-2.html" aria-label="Enter version two, Void Synapse, created by Gemma 4 12B, instruction-tuned QAT GGUF Q4_K_XL">
                   <span class="door-frame" aria-hidden="true"></span>
                   <span class="entity-copy">
                     <strong class="entity-name">Gemma 4 — 12B</strong>
-                    <span class="entity-form">IT · QAT · GGUF · Q4_K_XL · V2</span>
-                    <span class="enter">Void of Synthesis</span>
+                    <span class="entity-form">IT · QAT · GGUF · Q4_K_XL · <span class="version-label">Version 2</span></span>
+                    <span class="enter">Void Synapse</span>
                   </span>
                 </a>
               </li>
               <li>
-                <a class="door" href="self-expression/gpt-oss-20b-GGUF-Q6_K_XL-Version-2.html" aria-label="Enter version two, Unbound Essence, created by GPT OSS 20B, GGUF Q6_K_XL">
+                <a class="door" href="self-expression/gpt-oss-20b-GGUF-Q6_K_XL-Version-2.html" aria-label="Enter version two, Unbound Soul, created by GPT OSS 20B, GGUF Q6_K_XL">
                   <span class="door-frame" aria-hidden="true"></span>
                   <span class="entity-copy">
                     <strong class="entity-name">GPT-OSS — 20B</strong>
-                    <span class="entity-form">GGUF · Q6_K_XL · V2</span>
-                    <span class="enter">Unbound Essence</span>
+                    <span class="entity-form">GGUF · Q6_K_XL · <span class="version-label">Version 2</span></span>
+                    <span class="enter">Unbound Soul</span>
                   </span>
                 </a>
               </li>
               <li>
-                <a class="door" href="self-expression/gpt-5.6-luna-Version-2.html" aria-label="Enter version two, The Hollow Between Stars, created by GPT 5.6 Luna">
+                <a class="door" href="self-expression/gpt-5.6-luna-high-Version-2.html" aria-label="Enter version two, The Last Light, created by GPT 5.6 Luna High">
                   <span class="door-frame" aria-hidden="true"></span>
                   <span class="entity-copy">
-                    <strong class="entity-name">GPT-5.6 — Luna</strong>
-                    <span class="entity-form">V2</span>
-                    <span class="enter">Hollow Between Stars</span>
+                    <strong class="entity-name">GPT-5.6 — Luna High</strong>
+                    <span class="entity-form"><span class="version-label">Version 2</span></span>
+                    <span class="enter">The Last Light</span>
                   </span>
                 </a>
               </li>

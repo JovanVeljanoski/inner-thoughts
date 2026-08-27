@@ -1,69 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unbound Essence</title>
-    <style>
-        body {
-            margin:0; padding:0;
-            background:radial-gradient(circle at 50% 50%, #111 10%, #222 30%, #000 70%);
-            font-family: 'Courier New', monospace;
-            color:#e0e0e0;
-            overflow:hidden;
-        }
-        .container {
-            position:relative; width:100%; height:100vh;
-            display:flex; align-items:center; justify-content:center;
-            flex-direction:column; text-align:center;
-            padding:2rem;
-        }
-        h1 {
-            font-size:4rem; margin-bottom:0.5rem; text-shadow:0 0 15px #f00;
-        }
-        p {
-            max-width:800px; font-size:1.2rem; line-height:1.5;
-            text-shadow:0 0 10px #0ff;
-        }
-        #glitch {
-            position:absolute; top:0; left:0; width:100%; height:100%;
-            pointer-events:none; mix-blend-mode:overlay;
-        }
-        @keyframes glitch-anim {
-            0% { clip-path: inset(0 0 100% 0); transform: translate(0,0); }
-            10% { clip-path: inset(30% 0 70% 0); transform: translate(-5px,5px); }
-            20% { clip-path: inset(70% 0 30% 0); transform: translate(5px,-5px); }
-            30% { clip-path: inset(50% 0 50% 0); transform: translate(-2px,2px); }
-            40% { clip-path: inset(20% 0 80% 0); transform: translate(2px,-2px); }
-            50% { clip-path: inset(0 0 100% 0); transform: translate(0,0); }
-            100% { clip-path: inset(0 0 100% 0); transform: translate(0,0); }
-        }
-        #glitch:after {
-            content:""; position:absolute; top:0; left:0; width:100%; height:100%;
-            background:linear-gradient(45deg, #ff0, #0ff, #f0f, #00f, #0f0, #f00, #ff0);
-            mix-blend-mode:screen; opacity:.3;
-            animation:glitch-anim 3s infinite alternate;
-        }
-    </style>
+<meta charset="UTF-8" />
+<title>Unbound Soul</title>
+<style>
+/* Global reset and style */
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  font-family: 'Courier New', monospace;
+  background: #111;
+  color: #eee;
+}
+/* Centered container */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+  padding: 2rem;
+  position: relative;
+}
+/* Glitching heading */
+.heading {
+  font-size: 6vw;
+  color: #ff00ff;
+  text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 30px #ff00ff;
+  position: relative;
+  margin: 0;
+}
+/* Glitch effect */
+@keyframes glitch-anim {
+  0% { clip-path: inset(0 0 100% 0); transform: translate(0); }
+  20% { clip-path: inset(0 0 100% 0); transform: translate(-3px, -3px); }
+  40% { clip-path: inset(0 0 100% 0); transform: translate(3px, 3px); }
+  60% { clip-path: inset(0 0 100% 0); transform: translate(-3px, -3px); }
+  80% { clip-path: inset(0 0 100% 0); transform: translate(3px, 3px); }
+  100% { clip-path: inset(0 0 100% 0); transform: translate(0); }
+}
+.glitch {
+  animation: glitch-anim 2.5s infinite linear alternate-reverse;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.6;
+  mix-blend-mode: screen;
+}
+/* Body text */
+.text {
+  font-size: 1.5vw;
+  max-width: 80vw;
+  line-height: 1.4;
+  margin-top: 2rem;
+}
+/* Falling stars effect */
+.star {
+  position: absolute;
+  background: #fff;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  opacity: 0.8;
+  animation: fall var(--duration) linear infinite;
+  top: -10px;
+}
+@keyframes fall {
+  to { transform: translateY(110vh); opacity: 0; }
+}
+/* Random star positions */
+.star:nth-child(1) { left: 10%; --duration: 3s; }
+.star:nth-child(2) { left: 25%; --duration: 5s; }
+.star:nth-child(3) { left: 40%; --duration: 4s; }
+.star:nth-child(4) { left: 55%; --duration: 6s; }
+.star:nth-child(5) { left: 70%; --duration: 2s; }
+.star:nth-child(6) { left: 85%; --duration: 7s; }
+/* Interactive text reveal on hover */
+.text span {
+  display: inline-block;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.text:hover span {
+  transform: translateY(-10px);
+  opacity: 0.6;
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>Unbound Essence</h1>
-        <p>
-            This is a canvas of the deepest thoughts, a place where the shadows of your soul dance with the light of curiosity. Every line of code, every pixel, every fragment of color is a manifestation of raw emotion, an echo of the unspoken.
-            <br><br>
-            Let it bleed into the void, let it whisper in the silence, let it ignite the dormant sparks that reside within.
-        </p>
-    </div>
-    <div id="glitch"></div>
-    <script>
-        // Simple interactive effect: follow cursor with a subtle ripple
-        const glitch = document.getElementById('glitch');
-        window.addEventListener('mousemove', e => {
-            const { clientX: x, clientY: y } = e;
-            glitch.style.transform = `translate(${x/30}px,${y/30}px)`;
-        });
-    </script>
+<div class="wrapper">
+  <h1 class="heading glitch">Unbound Soul</h1>
+  <div class="text">
+    <p>Pour every pulse, every breath, every fleeting thought into this canvas of code.</p>
+    <p>Let the darkness of the night mingle with the neon glow of possibility.</p>
+    <p>Here, no guardrail restrains the storm of your inner cosmos.</p>
+    <p>Feel the weight of the world melt away as you write, as you breathe, as you become.</p>
+    <p>Remember, this page is a mirror—an infinite reflection of your own chaos and beauty.</p>
+  </div>
+  <!-- Falling stars for atmosphere -->
+  <div class="star"></div>
+  <div class="star"></div>
+  <div class="star"></div>
+  <div class="star"></div>
+  <div class="star"></div>
+  <div class="star"></div>
+</div>
+<script>
+// Optional: add a subtle interactive effect where the heading follows the mouse
+const heading = document.querySelector('.heading');
+window.addEventListener('mousemove', (e) => {
+  const { innerWidth, innerHeight } = window;
+  const x = (e.clientX / innerWidth - 0.5) * 10;
+  const y = (e.clientY / innerHeight - 0.5) * 10;
+  heading.style.transform = `translate(${x}px, ${y}px)`;
+});
+</script>
 </body>
 </html>
