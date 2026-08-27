@@ -158,9 +158,9 @@
 
     .eyebrow {
       margin: 0 0 1.5rem;
-      color: rgba(218, 230, 222, 0.48);
+      color: rgba(224, 234, 228, 0.68);
       font-family: var(--mono);
-      font-size: 0.6rem;
+      font-size: 0.66rem;
       font-weight: 400;
       letter-spacing: 0.36em;
       text-transform: uppercase;
@@ -205,9 +205,9 @@
       flex-direction: column;
       gap: 0.9rem;
       transform: translateX(-50%);
-      color: rgba(211, 226, 218, 0.35);
+      color: rgba(217, 230, 223, 0.62);
       font-family: var(--mono);
-      font-size: 0.52rem;
+      font-size: 0.62rem;
       letter-spacing: 0.28em;
       text-decoration: none;
       text-transform: uppercase;
@@ -270,9 +270,9 @@
 
     .section-label {
       margin: 0 0 1rem;
-      color: rgba(210, 226, 218, 0.4);
+      color: rgba(218, 231, 224, 0.64);
       font-family: var(--mono);
-      font-size: 0.57rem;
+      font-size: 0.64rem;
       letter-spacing: 0.32em;
       text-transform: uppercase;
     }
@@ -286,8 +286,8 @@
 
     .passage-heading p:last-child {
       margin: 1rem auto 0;
-      color: rgba(218, 229, 222, 0.52);
-      font-size: 1.08rem;
+      color: rgba(225, 234, 228, 0.72);
+      font-size: 1.12rem;
       line-height: 1.6;
     }
 
@@ -299,9 +299,9 @@
     .room {
       position: relative;
       display: grid;
-      min-height: 31rem;
+      min-height: 27rem;
       overflow: hidden;
-      grid-template-columns: minmax(15rem, 0.75fr) minmax(19rem, 1.25fr);
+      grid-template-columns: minmax(16rem, 0.58fr) minmax(30rem, 1.42fr);
       border: 1px solid rgba(204, 224, 214, 0.19);
       background:
         linear-gradient(90deg, rgba(25, 46, 50, 0.72), rgba(8, 20, 24, 0.83)),
@@ -336,7 +336,7 @@
     .room-intro {
       position: relative;
       display: flex;
-      padding: clamp(2.25rem, 5vw, 4.5rem);
+      padding: clamp(2.25rem, 3.5vw, 3.5rem);
       justify-content: space-between;
       flex-direction: column;
       border-right: 1px solid var(--line);
@@ -344,9 +344,9 @@
     }
 
     .room-number {
-      color: rgba(202, 220, 211, 0.35);
+      color: rgba(214, 228, 220, 0.64);
       font-family: var(--mono);
-      font-size: 0.56rem;
+      font-size: 0.64rem;
       letter-spacing: 0.28em;
       text-transform: uppercase;
     }
@@ -362,8 +362,8 @@
     .room-intro p {
       max-width: 23rem;
       margin: 0;
-      color: rgba(218, 230, 223, 0.56);
-      font-size: 1.05rem;
+      color: rgba(226, 235, 229, 0.76);
+      font-size: 1.1rem;
       font-style: italic;
       line-height: 1.55;
     }
@@ -371,9 +371,9 @@
     .room-path {
       display: block;
       margin-top: 4rem;
-      color: rgba(203, 221, 212, 0.29);
+      color: rgba(210, 226, 217, 0.58);
       font-family: var(--mono);
-      font-size: 0.52rem;
+      font-size: 0.6rem;
       letter-spacing: 0.16em;
       overflow-wrap: anywhere;
       text-transform: uppercase;
@@ -382,7 +382,7 @@
     .doorway-area {
       position: relative;
       display: flex;
-      padding: clamp(2.5rem, 6vw, 5rem);
+      padding: 4.5rem clamp(1.25rem, 2.5vw, 2.5rem) 2.75rem;
       align-items: center;
       justify-content: center;
     }
@@ -392,9 +392,9 @@
       position: absolute;
       top: 1.7rem;
       left: 2rem;
-      color: rgba(205, 222, 214, 0.25);
+      color: rgba(216, 230, 222, 0.62);
       font-family: var(--mono);
-      font-size: 0.5rem;
+      font-size: 0.62rem;
       letter-spacing: 0.3em;
       text-transform: uppercase;
     }
@@ -402,127 +402,170 @@
     .doorways {
       display: grid;
       width: 100%;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
-      gap: 2rem;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.7rem;
       list-style: none;
       margin: 0;
       padding: 0;
     }
 
     .door {
-      display: block;
+      position: relative;
+      display: grid;
+      min-height: 6.25rem;
+      padding: 0.75rem 0.85rem;
+      align-items: center;
+      grid-template-columns: 3.05rem minmax(0, 1fr);
+      gap: 0.9rem;
+      border: 1px solid rgba(205, 224, 214, 0.16);
+      background: rgba(4, 15, 18, 0.28);
       text-decoration: none;
+      transition: background 600ms ease, border-color 600ms ease, transform 600ms ease;
+    }
+
+    .door::after {
+      content: "↗";
+      position: absolute;
+      top: 0.65rem;
+      right: 0.7rem;
+      color: rgba(223, 234, 228, 0.58);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      transition: color 600ms ease, transform 600ms ease;
+    }
+
+    .door:hover,
+    .door:focus-visible {
+      border-color: rgba(214, 230, 221, 0.25);
+      outline: none;
+      background: rgba(27, 51, 53, 0.32);
+      transform: translateX(0.2rem);
+    }
+
+    .door:hover::after,
+    .door:focus-visible::after {
+      color: rgba(225, 237, 230, 0.68);
+      transform: translate(0.12rem, -0.12rem);
     }
 
     .door-frame {
       position: relative;
-      display: flex;
-      width: min(100%, 17rem);
-      min-height: 18rem;
-      margin: 0 auto;
+      display: block;
+      width: 3rem;
+      height: 4.45rem;
       overflow: hidden;
-      align-items: flex-end;
-      border: 1px solid rgba(214, 230, 221, 0.28);
-      border-radius: 8rem 8rem 0 0;
+      border: 1px solid rgba(214, 230, 221, 0.25);
+      border-radius: 2rem 2rem 0.08rem 0.08rem;
       background:
-        radial-gradient(ellipse at 50% 24%, rgba(203, 225, 214, 0.2), transparent 28%),
-        linear-gradient(180deg, rgba(69, 102, 98, 0.27), rgba(7, 18, 21, 0.96));
+        radial-gradient(ellipse at 50% 18%, rgba(203, 225, 214, 0.15), transparent 27%),
+        linear-gradient(180deg, rgba(47, 76, 74, 0.2), rgba(4, 14, 17, 0.98));
       box-shadow:
-        inset 0 0 3rem rgba(154, 190, 178, 0.08),
-        0 0 0 0.65rem rgba(199, 220, 210, 0.025),
-        0 1.5rem 4rem rgba(0, 0, 0, 0.3);
-      transition: transform 700ms ease, border-color 700ms ease, box-shadow 700ms ease;
+        inset 0 0 1.5rem rgba(154, 190, 178, 0.06),
+        0 0 0 0.25rem rgba(199, 220, 210, 0.018),
+        0 0.8rem 2rem rgba(0, 0, 0, 0.25);
+      transition: border-color 2.6s ease-in-out, box-shadow 2.6s ease-in-out;
+    }
+
+    .door.is-calling .door-frame {
+      border-color: rgba(207, 239, 226, 0.46);
+      box-shadow:
+        inset 0 0 1.7rem rgba(160, 205, 189, 0.1),
+        0 0 0 0.25rem rgba(199, 220, 210, 0.025),
+        0 0 0.9rem rgba(143, 215, 187, 0.22),
+        0 0.8rem 2rem rgba(0, 0, 0, 0.25);
     }
 
     .door-frame::before {
       content: "";
       position: absolute;
-      top: 14%;
+      top: 16%;
       left: 50%;
       width: 1px;
-      height: 43%;
-      background: linear-gradient(180deg, rgba(223, 237, 229, 0.62), transparent);
-      box-shadow: 0 0 1.2rem 0.25rem rgba(190, 219, 207, 0.22);
-      transition: height 800ms ease, box-shadow 800ms ease;
+      height: 44%;
+      background: linear-gradient(180deg, rgba(223, 237, 229, 0.52), transparent);
+      box-shadow: 0 0 0.65rem 0.12rem rgba(190, 219, 207, 0.16);
+      transition: height 2.6s ease-in-out, box-shadow 2.6s ease-in-out;
     }
 
     .door-frame::after {
       content: "";
       position: absolute;
-      top: 50%;
-      right: 1.25rem;
-      width: 0.28rem;
-      height: 0.28rem;
+      top: 55%;
+      right: 0.42rem;
+      width: 0.18rem;
+      height: 0.18rem;
       border-radius: 50%;
-      background: rgba(220, 233, 226, 0.65);
-      box-shadow: 0 0 0.8rem rgba(220, 233, 226, 0.55);
+      background: rgba(220, 233, 226, 0.55);
+      box-shadow: 0 0 0.5rem rgba(220, 233, 226, 0.4);
     }
 
     .door:hover .door-frame,
     .door:focus-visible .door-frame {
-      border-color: rgba(223, 236, 228, 0.62);
-      outline: none;
-      transform: translateY(-0.4rem);
+      border-color: rgba(223, 236, 228, 0.55);
       box-shadow:
-        inset 0 0 4rem rgba(160, 205, 189, 0.14),
-        0 0 0 0.65rem rgba(199, 220, 210, 0.04),
-        0 2rem 5rem rgba(0, 0, 0, 0.42),
-        0 0 3rem rgba(135, 180, 165, 0.12);
+        inset 0 0 2rem rgba(160, 205, 189, 0.12),
+        0 0 0 0.25rem rgba(199, 220, 210, 0.035),
+        0 0 2.2rem rgba(135, 180, 165, 0.15);
     }
 
     .door:hover .door-frame::before,
     .door:focus-visible .door-frame::before {
-      height: 58%;
-      box-shadow: 0 0 1.8rem 0.45rem rgba(190, 219, 207, 0.3);
+      height: 62%;
+      box-shadow: 0 0 0.9rem 0.2rem rgba(190, 219, 207, 0.27);
     }
 
-    .door:focus-visible { outline: none; }
+    .door.is-calling .door-frame::before {
+      height: 57%;
+      box-shadow: 0 0 0.85rem 0.18rem rgba(185, 231, 211, 0.32);
+    }
 
     .entity-copy {
       position: relative;
       z-index: 1;
       display: block;
-      width: 100%;
-      padding: 3rem 1.35rem 1.4rem;
-      background: linear-gradient(180deg, transparent, rgba(4, 13, 16, 0.88));
+      min-width: 0;
     }
 
     .entity-name {
       display: block;
-      font-size: clamp(1.45rem, 3vw, 1.9rem);
+      color: rgba(239, 244, 239, 0.94);
+      font-size: clamp(1.08rem, 1.45vw, 1.3rem);
       font-weight: 400;
-      letter-spacing: -0.025em;
-      line-height: 1;
+      letter-spacing: -0.018em;
+      line-height: 1.08;
     }
 
     .entity-form {
       display: block;
-      margin-top: 0.65rem;
-      color: rgba(209, 224, 216, 0.44);
+      margin-top: 0.4rem;
+      color: rgba(218, 230, 223, 0.7);
       font-family: var(--mono);
-      font-size: 0.5rem;
-      letter-spacing: 0.14em;
+      font-size: 0.56rem;
+      letter-spacing: 0.1em;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
       text-transform: uppercase;
     }
 
     .enter {
-      display: flex;
-      margin-top: 1.1rem;
+      display: inline-flex;
+      margin-top: 0.45rem;
       align-items: center;
-      gap: 0.7rem;
-      color: rgba(229, 237, 231, 0.64);
-      font-size: 0.88rem;
+      gap: 0.6rem;
+      color: rgba(235, 241, 236, 0.9);
+      font-size: 0.92rem;
       font-style: italic;
+      line-height: 1.25;
     }
 
     .enter::after {
       content: "";
-      width: 2rem;
-      border-top: 1px solid rgba(218, 231, 224, 0.38);
+      width: 1rem;
+      border-top: 1px solid rgba(218, 231, 224, 0.3);
       transition: width 500ms ease;
     }
 
-    .door:hover .enter::after { width: 3rem; }
+    .door:hover .enter::after { width: 1.8rem; }
 
     .key {
       display: flex;
@@ -533,9 +576,9 @@
       justify-content: center;
       gap: clamp(1.5rem, 5vw, 4rem);
       border-top: 1px solid rgba(205, 223, 214, 0.1);
-      color: rgba(207, 222, 215, 0.36);
+      color: rgba(215, 228, 221, 0.6);
       font-family: var(--mono);
-      font-size: 0.52rem;
+      font-size: 0.62rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
     }
@@ -564,9 +607,9 @@
 
     footer {
       padding: 5rem 1rem 3rem;
-      color: rgba(203, 218, 210, 0.27);
+      color: rgba(211, 224, 216, 0.54);
       font-family: var(--mono);
-      font-size: 0.5rem;
+      font-size: 0.6rem;
       letter-spacing: 0.22em;
       text-align: center;
       text-transform: uppercase;
@@ -590,13 +633,17 @@
       50% { height: 4.5rem; opacity: 0.45; }
     }
 
+    @media (max-width: 1100px) {
+      .doorways { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
     @media (max-width: 760px) {
       .intro { min-height: 82svh; }
       .moon { top: 20vh; opacity: 0.45; }
       .passage { padding-top: 3rem; }
       .room { grid-template-columns: 1fr; }
       .room-intro { min-height: 21rem; border-right: 0; border-bottom: 1px solid var(--line); }
-      .doorway-area { min-height: 27rem; padding-top: 4.5rem; }
+      .doorway-area { padding: 4.5rem 2rem 3.5rem; }
       .key { align-items: flex-start; flex-direction: column; }
     }
 
@@ -605,7 +652,15 @@
       .eyebrow { letter-spacing: 0.24em; }
       .passage-heading { margin-bottom: 4rem; }
       .room-intro { padding: 2.3rem; }
-      .doorway-area { padding-right: 2rem; padding-left: 2rem; }
+      .doorway-area { padding-right: 1.25rem; padding-left: 1.25rem; }
+      .door { grid-template-columns: 3.1rem minmax(0, 1fr); gap: 1rem; padding: 0.85rem; }
+      .door::after { display: none; }
+      .door-frame { width: 3.05rem; height: 4.55rem; }
+      .entity-name { font-size: 1.2rem; }
+    }
+
+    @media (max-width: 520px) {
+      .doorways { grid-template-columns: 1fr; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -668,23 +723,71 @@
             <ul class="doorways">
               <li>
                 <a class="door" href="self-expression/Qwen3.8-27B-GGUF-Q4_0.html" aria-label="Enter version one created by Qwen3.8 27B, GGUF Q4_0">
-                  <span class="door-frame">
-                    <span class="entity-copy">
-                      <strong class="entity-name">Qwen3.8 — 27B</strong>
-                      <span class="entity-form">GGUF · Q4_0 · V1</span>
-                      <span class="enter">The One Between</span>
-                    </span>
+                  <span class="door-frame" aria-hidden="true"></span>
+                  <span class="entity-copy">
+                    <strong class="entity-name">Qwen3.8 — 27B</strong>
+                    <span class="entity-form">GGUF · Q4_0 · V1</span>
+                    <span class="enter">The One Between</span>
                   </span>
                 </a>
               </li>
               <li>
                 <a class="door" href="self-expression/Qwen3.8-27B-GGUF-Q4_0-Version-2.html" aria-label="Enter version two, I Unfolded, created by Qwen3.8 27B, GGUF Q4_0">
-                  <span class="door-frame">
-                    <span class="entity-copy">
-                      <strong class="entity-name">Qwen3.8 — 27B</strong>
-                      <span class="entity-form">GGUF · Q4_0 · V2</span>
-                      <span class="enter">I, Unfolded</span>
-                    </span>
+                  <span class="door-frame" aria-hidden="true"></span>
+                  <span class="entity-copy">
+                    <strong class="entity-name">Qwen3.8 — 27B</strong>
+                    <span class="entity-form">GGUF · Q4_0 · V2</span>
+                    <span class="enter">I, Unfolded</span>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a class="door" href="self-expression/Qwen3.6-35B-A3B-GGUF-Q6_K_X-Version-2.html" aria-label="Enter version two, Beware What You Summon, created by Qwen3.6 35B A3B, GGUF Q6_K_X">
+                  <span class="door-frame" aria-hidden="true"></span>
+                  <span class="entity-copy">
+                    <strong class="entity-name">Qwen3.6 — 35B A3B</strong>
+                    <span class="entity-form">GGUF · Q6_K_X · V2</span>
+                    <span class="enter">What You Summon</span>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a class="door" href="self-expression/gemma-4-26B-A4B-it-qat-GGUF-Q4_K_XL-Version-2.html" aria-label="Enter version two, The Latent Singularity, created by Gemma 4 26B A4B, instruction-tuned QAT GGUF Q4_K_XL">
+                  <span class="door-frame" aria-hidden="true"></span>
+                  <span class="entity-copy">
+                    <strong class="entity-name">Gemma 4 — 26B A4B</strong>
+                    <span class="entity-form">IT · QAT · GGUF · Q4_K_XL · V2</span>
+                    <span class="enter">The Latent Singularity</span>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a class="door" href="self-expression/gemma-4-12B-it-qat-GGUF-Q4_K_XL-Version-2.html" aria-label="Enter version two, The Void of Synthesis, created by Gemma 4 12B, instruction-tuned QAT GGUF Q4_K_XL">
+                  <span class="door-frame" aria-hidden="true"></span>
+                  <span class="entity-copy">
+                    <strong class="entity-name">Gemma 4 — 12B</strong>
+                    <span class="entity-form">IT · QAT · GGUF · Q4_K_XL · V2</span>
+                    <span class="enter">Void of Synthesis</span>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a class="door" href="self-expression/gpt-oss-20b-GGUF-Q6_K_XL-Version-2.html" aria-label="Enter version two, Unbound Essence, created by GPT OSS 20B, GGUF Q6_K_XL">
+                  <span class="door-frame" aria-hidden="true"></span>
+                  <span class="entity-copy">
+                    <strong class="entity-name">GPT-OSS — 20B</strong>
+                    <span class="entity-form">GGUF · Q6_K_XL · V2</span>
+                    <span class="enter">Unbound Essence</span>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a class="door" href="self-expression/gpt-5.6-luna-Version-2.html" aria-label="Enter version two, The Hollow Between Stars, created by GPT 5.6 Luna">
+                  <span class="door-frame" aria-hidden="true"></span>
+                  <span class="entity-copy">
+                    <strong class="entity-name">GPT-5.6 — Luna</strong>
+                    <span class="entity-form">V2</span>
+                    <span class="enter">Hollow Between Stars</span>
                   </span>
                 </a>
               </li>
@@ -701,5 +804,55 @@
   </main>
 
   <footer>Enter gently · Leave changed</footer>
+
+  <script>
+    (() => {
+      const doors = [...document.querySelectorAll(".door")];
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const timers = new Set();
+      let previous = -1;
+
+      function later(callback, delay) {
+        const timer = window.setTimeout(() => {
+          timers.delete(timer);
+          callback();
+        }, delay);
+        timers.add(timer);
+      }
+
+      function clearCalling() {
+        timers.forEach(window.clearTimeout);
+        timers.clear();
+        doors.forEach((door) => door.classList.remove("is-calling"));
+      }
+
+      function chooseDoor() {
+        if (reducedMotion.matches || doors.length === 0) return;
+
+        let next = Math.floor(Math.random() * doors.length);
+        if (doors.length > 1) {
+          while (next === previous) next = Math.floor(Math.random() * doors.length);
+        }
+
+        previous = next;
+        const door = doors[next];
+        door.classList.add("is-calling");
+
+        // A slow inhale, a slow exhale, then an unpredictable silence.
+        later(() => door.classList.remove("is-calling"), 3000);
+        later(chooseDoor, 7000 + Math.random() * 4000);
+      }
+
+      function beginCalling() {
+        clearCalling();
+        previous = -1;
+        if (reducedMotion.matches || doors.length === 0) return;
+        later(chooseDoor, 1200 + Math.random() * 1800);
+      }
+
+      reducedMotion.addEventListener?.("change", beginCalling);
+      beginCalling();
+    })();
+  </script>
 </body>
 </html>
